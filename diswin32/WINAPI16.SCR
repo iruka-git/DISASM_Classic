@@ -1,0 +1,2 @@
+echo diswin -x16 %1\$$
+diswin -x16 %1\$$ >>winapi16.lst

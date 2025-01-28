@@ -1,0 +1,27 @@
+#
+#	CygWin32 b20.1 —p‚Å‚·.
+#
+#
+#.SUFFIXES:
+#.SUFFIXES:	.c	.o	.exe
+#
+.c.o:
+	gcc -O2 -mno-cygwin -c $*.c
+#
+files	=	disarm.o	symbol.o	arm-dis.o
+
+#
+#
+disarm.exe :  $(files)
+	gcc -s -mno-cygwin -o disarm.exe $(files)
+#
+test:
+	./disarm.exe	test.out >test.dis
+#
+testt:
+	./disarm.exe -t thumb.out >test.dis
+#
+clean:
+	-rm *.o
+	-rm *.bak
+#

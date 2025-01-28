@@ -1,0 +1,2 @@
+echo diswin -x32 %1\$$
+diswin -x32 %1\$$ >>winapi32.lst

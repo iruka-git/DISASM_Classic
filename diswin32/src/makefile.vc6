@@ -1,0 +1,35 @@
+#
+#	makefile for CL (Microsoft)
+#	=====================================
+#
+OPT	= -DMSVC
+EXE	= .exe
+CC	= cl
+#
+#  ===== rule =====
+#
+%.obj : %.c
+	$(CC) $(OPT) -O2 -c $*.c
+#
+#  ===== source files =====
+#
+files	= diswin.obj dis.obj dissub.obj mmx.obj kni.obj le.obj pe.obj hash.obj strlib.obj
+#
+mips	= risc.obj mips-dis.obj mips-opc.obj
+sh	= sh-dis.obj
+arm	= arm-dis.obj
+#
+#  ===== target =====
+#
+diswin${EXE}: $(files) $(mips) $(sh) $(arm)
+	$(CC) -Fm $(files) $(mips) $(sh) $(arm)
+#
+#
+#  ===== other stuff =====
+#
+clean:
+	-rm *.o
+	-rm *.obj
+	-rm *.map
+	-rm *.bak
+#

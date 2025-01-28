@@ -1,0 +1,3 @@
+mkdir dis\$*
+echo diswin -sdis\$*\seg_ %1\$$
+diswin -sdis\$*\seg_ %1\$$ >dis\$*\$*.lst

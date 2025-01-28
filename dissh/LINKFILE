@@ -1,0 +1,12 @@
+c:\BC4\LIB\c0s.obj+
+dissh.obj+
+dis.obj+
+opcode.obj+
+mark.obj+
+symbol.obj
+dissh.exe
+/c/x
+c:\bc4\lib\noehs.lib+
+c:\BC4\LIB\emu.lib+
+c:\BC4\LIB\maths.lib+
+c:\BC4\LIB\cs.lib

@@ -1,0 +1,21 @@
+#
+#
+#
+.c.obj:
+	bcc -O2 -c -w-pro -w-rvl $*.c
+#
+files	=	disr.obj	symbol.obj	mips-dis.obj	mips-opc.obj
+
+#
+#
+disr.exe :  $(files)
+	bcc $(files) noehs.lib
+#
+#	bc4より前のBorland-C,Turbo-Cでは、noehs.libは不要です。
+#	bc4では、noehs.libをリンクするとコードサイズが小さくなります。
+#	スモールモデルでコンパイルしています。
+#
+clean:
+	-del *.obj
+	-del *.bak
+#
