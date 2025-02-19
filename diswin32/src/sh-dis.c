@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define STATIC_TABLE
 #define DEFINE_TABLE
 
@@ -28,6 +30,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 static	char	dline=0;
 static	char	crlf_flg=0;
+
+
+bfd_vma		bfd_getl32(const unsigned char *buffer);
+bfd_vma		bfd_getb32(const unsigned char *buffer);
+bfd_vma		bfd_getl16(const unsigned char *buffer);
+bfd_vma		bfd_getb16(const unsigned char *buffer);
+
 
 //static 
 int 
@@ -48,7 +57,7 @@ print_insn_shx (memaddr, info)
 		if(dline) {
   		   info->fprintf_func (info->stream,"\t   -s-\t");				// -s- DELAY SLOT
 		}else{
-  		   info->fprintf_func (info->stream,"\t\t");					//ƒ^ƒuƒXƒgƒbƒv‚PŒÂƒvƒŠƒ“ƒg.
+  		   info->fprintf_func (info->stream,"\t\t");					//ã‚¿ãƒ–ã‚¹ãƒˆãƒƒãƒ—ï¼‘å€‹ãƒ—ãƒªãƒ³ãƒˆ.
 		}
 
   if (status != 0) 

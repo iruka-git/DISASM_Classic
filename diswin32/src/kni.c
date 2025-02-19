@@ -62,6 +62,10 @@
 0f f7		maskmovq	
 */
 
+#include <stdio.h>
+#include <string.h>
+
+void	modrm(char *s,int opc,int mod_rm,int ptrtype);
 void	mne(char *s);
 void	immb(void);
 void	modrmov(char *s1,char *s2,int opc);
@@ -71,7 +75,7 @@ void	set_eop(void);
 extern char    *op;
 extern char    op1buf[];
 extern char    op2buf[];
-extern	char *op2p;     /* ƒIƒyƒ‰ƒ“ƒh‚Q */
+extern	char *op2p;     /* ã‚ªãƒšãƒ©ãƒ³ãƒ‰ï¼’ */
 extern int     mmx;
 
 //	extended attributes.
@@ -221,7 +225,7 @@ void inst_kni(int opc,int rep)
 		t += reg;	// look ahead!
 		
 		mne( t->inst );
-        modrm(op1buf,1,mod_rm,NONTYPE);   /*‘æ‚QƒIƒyƒ‰ƒ“ƒh‚Ír/m */
+        modrm(op1buf,1,mod_rm,NONTYPE);   /*ç¬¬ï¼’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯r/m */
         set_eop();
 		return;
 

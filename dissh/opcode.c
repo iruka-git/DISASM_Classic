@@ -202,7 +202,7 @@ char  *operands[]={
 /*                            $i(8)      immediate (sign-extend 32bit) */
 /*                            $g(8)      gbr offset(8bit)              */
 /*                    $b(12)             branch offset                 */
-/*------“WŠJ•¶Žš—ñ ----------------‚…‚Ž‚•‚–¼----------“WŠJŒ`----------*/
+/*------å±•é–‹æ–‡å­—åˆ— ----------------ï½…ï½Žï½•ï½å----------å±•é–‹å½¢----------*/
         "",                     /* No_op               no op           */
         "#$i",                  /* Imm                 #imm            */
         "#$i,@(r0,gbr)",        /* Imm_at_R0_GBR       #imm,@(R0,GBR)  */
@@ -263,7 +263,7 @@ char  *operands[]={
 int      ra,rn,rm,rx,opc;
 long     disp,imm;
 
-int	get_opcode(ins)
+int	get_opcode(int ins)
 {
 	opc=ins;
 	ra=(ins>>12) & 0x0f;

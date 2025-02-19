@@ -11,15 +11,15 @@
 
 #include <stdio.h>
 
-/*****************************/
-/* ë´ÇËÇ»Ç¢Ç‡ÇÃÇ bfd.h Ç©ÇÁ */
-/*#include "bfd.h"*/
 typedef unsigned long bfd_vma;
 typedef	int	boolean;
 typedef unsigned char bfd_byte;
-bfd_vma		bfd_getb32	   PARAMS ((const unsigned char *));
-bfd_vma		bfd_getl32	   PARAMS ((const unsigned char *));
-/*****************************/
+bfd_vma	bfd_getb32	   PARAMS ((const unsigned char *));
+bfd_vma	bfd_getl32	   PARAMS ((const unsigned char *));
+typedef unsigned int bfd;
+
+typedef const char cchar;
+typedef unsigned char uchar;
 
 typedef int (*fprintf_ftype) PARAMS((FILE*, const char*, ...));
 
@@ -33,6 +33,14 @@ enum dis_insn_type {
   dis_dref,                     /* Data reference instruction */
   dis_dref2                     /* Two data references in instruction */
 };
+
+enum bfd_endian { BFD_ENDIAN_BIG, BFD_ENDIAN_LITTLE, BFD_ENDIAN_UNKNOWN };
+
+
+//opintl.h„Çà„ÇäÊãùÂÄü.
+//# define _(String) dgettext (PACKAGE, String) „Åì„Å£„Å°„ÅØ‰Ωø„Çè„Å™„ÅÑ.
+# define _(String) (String)
+
 
 /* This struct is passed into the instruction decoding routine, 
    and is passed back out into each callback.  The various fields are used
@@ -53,11 +61,17 @@ typedef struct disassemble_info {
      but that would require one.  There currently isn't any such requirement
      so to avoid introducing one we record these explicitly.  */
   /* The bfd_arch value.  */
-  enum bfd_architecture arch;
+  /* The bfd_flavour.  This can be bfd_target_unknown_flavour.  */
+//  enum flavour;
+
+//  enum arch;
+//  enum bfd_architecture arch;
   /* The bfd_mach value.  */
   unsigned long mach;
+
   /* Endianness (for bi-endian cpus).  Mono-endian cpus can ignore this.  */
-  enum bfd_endian endian;
+//  enum endian;
+//  enum bfd_endian endian;
 
   /* For use by the disassembler.
      The top 16 bits are reserved for public use (and are documented here).
@@ -71,6 +85,10 @@ typedef struct disassemble_info {
      INFO is a pointer to this struct.
      Returns an errno value or 0 for success.  */
   int (*read_memory_func)
+    PARAMS ((bfd_vma memaddr, bfd_byte *myaddr, int length,
+             struct disassemble_info *info));
+
+  int (*print_memory_func)
     PARAMS ((bfd_vma memaddr, bfd_byte *myaddr, int length,
              struct disassemble_info *info));
 
@@ -89,6 +107,20 @@ typedef struct disassemble_info {
   bfd_byte *buffer;
   bfd_vma buffer_vma;
   int buffer_length;
+
+  /* This variable may be set by the instruction decoder.  It suggests
+      the number of bytes objdump should display on a single line.  If
+      the instruction decoder sets this, it should always set it to
+      the same value in order to get reasonable looking output.  */
+  int bytes_per_line;
+
+  /* the next two variables control the way objdump displays the raw data */
+  /* For example, if bytes_per_line is 8 and bytes_per_chunk is 4, the */
+  /* output will look like this:
+     00:   00000000 00000000
+     with the chunks displayed according to "display_endian". */
+  int bytes_per_chunk;
+  enum bfd_endian display_endian;
 
   /* Results from instruction decoders.  Not all decoders yet support
      this information.  This info is set each time an instruction is
@@ -142,7 +174,7 @@ extern int print_insn_rs6000            PARAMS ((bfd_vma, disassemble_info*));
 extern int print_insn_w65               PARAMS ((bfd_vma, disassemble_info*));
 
 /* Fetch the disassembler for a given BFD, if that support is available.  */
-extern disassembler_ftype disassembler  PARAMS ((bfd *));
+//extern disassembler_ftype disassembler  PARAMS ((bfd *));
 
 
 /* This block of definitions is for particular callers who read instructions
@@ -180,5 +212,11 @@ extern void generic_print_address
   (INFO).endian = BFD_ENDIAN_UNKNOWN, \
   (INFO).flags = 0, \
   (INFO).insn_info_valid = 0
+
+
+
+#define	false	0
+
+#define	ZZ	{printf("%s:%d: ÈÄöÈÅé„Åó„Åü\n",__FILE__,__LINE__);}
 
 #endif /* ! defined (DIS_ASM_H) */

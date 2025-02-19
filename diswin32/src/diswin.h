@@ -2,10 +2,11 @@
 
 typedef unsigned char	Uchar ;
 typedef unsigned short	Ushort;
-typedef	unsigned long	Ulong ;
+typedef	unsigned int	Uint  ;
+typedef	unsigned int	Uint ;
 
 
-#define VBUFSIZE    0x40000		/* o—ÍƒXƒgƒŠ[ƒ€ƒoƒbƒtƒ@ */
+#define VBUFSIZE    0x40000		/* å‡ºåŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ */
 #define	MMX			1
 #define	AMD3DNOW	1
 #define	KNI			1
@@ -14,87 +15,87 @@ typedef	unsigned long	Ulong ;
 /* OLD STYLE MS-DOS EXE HEADER */
 typedef struct  EXE_OLD_HDR {
     char    mz[2];      /*+00 'MZ' */
-    short   fragment;   /*+02 ÅIƒy[ƒW‚ÌƒoƒCƒg”B */
-    short   pages;      /*+04 ƒy[ƒW” */
-    short   relocations;/*+06 ƒŠƒƒP[ƒVƒ‡ƒ“ƒe[ƒuƒ‹‚Ì€–Ú” */
-    short   reloc_size; /*+08 ƒŠƒƒP[ƒVƒ‡ƒ“ƒe[ƒuƒ‹‚ÌƒTƒCƒY(16byte’PˆÊ) */
-    short   min_mem;    /*+0a Å¬•K—vƒƒ‚ƒŠ[(16byte’PˆÊ) */
-    short   max_mem;    /*+0c Å‘å•K—vƒƒ‚ƒŠ[(16byte’PˆÊ) */
-    short   stackseg;   /*+0e ƒXƒ^ƒbƒNƒZƒOƒƒ“ƒg‚ÌˆÊ’u(16byte’PˆÊ) */
-    short   init_sp;    /*+10 ƒXƒ^ƒbƒNƒ|ƒCƒ“ƒ^‰Šú’l */
+    short   fragment;   /*+02 æœ€çµ‚ãƒšãƒ¼ã‚¸ã®ãƒã‚¤ãƒˆæ•°ã€‚ */
+    short   pages;      /*+04 ãƒšãƒ¼ã‚¸æ•° */
+    short   relocations;/*+06 ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ãƒ¼ãƒ–ãƒ«ã®é …ç›®æ•° */
+    short   reloc_size; /*+08 ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ãƒ¼ãƒ–ãƒ«ã®ã‚µã‚¤ã‚º(16byteå˜ä½) */
+    short   min_mem;    /*+0a æœ€å°å¿…è¦ãƒ¡ãƒ¢ãƒªãƒ¼(16byteå˜ä½) */
+    short   max_mem;    /*+0c æœ€å¤§å¿…è¦ãƒ¡ãƒ¢ãƒªãƒ¼(16byteå˜ä½) */
+    short   stackseg;   /*+0e ã‚¹ã‚¿ãƒƒã‚¯ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ä½ç½®(16byteå˜ä½) */
+    short   init_sp;    /*+10 ã‚¹ã‚¿ãƒƒã‚¯ãƒã‚¤ãƒ³ã‚¿åˆæœŸå€¤ */
     short   chack_sum;  /*+12  */
-    short   init_ip;    /*+14 ‚o‚b‰Šú’l */
+    short   init_ip;    /*+14 ï¼°ï¼£åˆæœŸå€¤ */
     short   init_cs;    /*+16 */
-    short   reloc_offset;/*+18 ƒŠƒƒP[ƒVƒ‡ƒ“ƒe[ƒuƒ‹‚ÌˆÊ’u */
-    short   overlay;    /*+1a ƒI[ƒoƒŒƒC”Ô†ií’“•”‚È‚ç‚Oj */
+    short   reloc_offset;/*+18 ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ãƒ¼ãƒ–ãƒ«ã®ä½ç½® */
+    short   overlay;    /*+1a ã‚ªãƒ¼ãƒãƒ¬ã‚¤ç•ªå·ï¼ˆå¸¸é§éƒ¨ãªã‚‰ï¼ï¼‰ */
     short   rsv1[16];   /*+1c */
-    long    ne_header;  /*+3c 'NE'ƒwƒbƒ_[‚Ìn‚Ü‚è‚ÌƒIƒtƒZƒbƒg */
+    int     ne_header;  /*+3c 'NE'ãƒ˜ãƒƒãƒ€ãƒ¼ã®å§‹ã¾ã‚Šã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
 } EXE_OLD_HDR;
-/* NE-HEADER‚ÌˆÊ’u‚ğŠ„‚èo‚·•û–@F */
-/* (1)OLD-HEADER‚Ìoffset 18h(reloc_offset)==0x0040‚Å‚ ‚é‚±‚Æ‚ğŠm‚©‚ß‚éB */
-/* (2)ne_header ‚Éseek‚·‚éB */
+/* NE-HEADERã®ä½ç½®ã‚’å‰²ã‚Šå‡ºã™æ–¹æ³•ï¼š */
+/* (1)OLD-HEADERã®offset 18h(reloc_offset)==0x0040ã§ã‚ã‚‹ã“ã¨ã‚’ç¢ºã‹ã‚ã‚‹ã€‚ */
+/* (2)ne_header ã«seekã™ã‚‹ã€‚ */
 
 
 /* WINDOWS 2.11 EXE HEADER */
 typedef struct  EXE_NEW_HDR {
     char    ne[2];      /*+00 'NE' */
-    char    ver;        /*+02 ƒŠƒ“ƒJ[‚Ìƒo[ƒWƒ‡ƒ“ */
+    char    ver;        /*+02 ãƒªãƒ³ã‚«ãƒ¼ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ */
     char    rev;        /*+03 */
-    short   entrytable; /*+04 ƒGƒ“ƒgƒŠ[ƒe[ƒuƒ‹‚Ö‚ÌƒIƒtƒZƒbƒg('NE'‚©‚ç) */
-    short   entrysize;  /*+06 ƒGƒ“ƒgƒŠ[ƒe[ƒuƒ‹‚ÌƒoƒCƒg” */
-    long    crc_32;     /*+08 ‚b‚q‚b‚R‚Q‚Ì’l */
+    short   entrytable; /*+04 ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ('NE'ã‹ã‚‰) */
+    short   entrysize;  /*+06 ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒã‚¤ãƒˆæ•° */
+    int     crc_32;     /*+08 ï¼£ï¼²ï¼£ï¼“ï¼’ã®å€¤ */
     short   flag;       /*+0c 0000:NO AUTO  DATA */
                         /*    0001:SINGLE   DATA */
                         /*    0002:MULTIPLE DATA */
                         /*    2000:LINK ERR */
                         /*    8000: DLL */
-    short   autoseg;    /*+0e ©“®ƒf[ƒ^ƒZƒOƒƒ“ƒg‚Ì”Ô† */
-    short   heapsize;   /*+10 ƒ_ƒCƒiƒ~ƒbƒNƒq[ƒv‚Ì‰ŠúƒTƒCƒY */
-    short   stacksize;  /*+12 ƒXƒ^ƒbƒN‚ÌƒTƒCƒY(ss!=ds‚Ì‚Í0) */
+    short   autoseg;    /*+0e è‡ªå‹•ãƒ‡ãƒ¼ã‚¿ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã®ç•ªå· */
+    short   heapsize;   /*+10 ãƒ€ã‚¤ãƒŠãƒŸãƒƒã‚¯ãƒ’ãƒ¼ãƒ—ã®åˆæœŸã‚µã‚¤ã‚º */
+    short   stacksize;  /*+12 ã‚¹ã‚¿ãƒƒã‚¯ã®ã‚µã‚¤ã‚º(ss!=dsã®æ™‚ã¯0) */
     short   init_ip;    /*+14 */
     short   init_cs;    /*+16 */
     short   init_sp;    /*+18 */
     short   init_ss;    /*+1a */
-    short   segentry;   /*+1c ƒZƒOƒƒ“ƒgƒe[ƒuƒ‹‚ÌƒGƒ“ƒgƒŠ” */
-    short   modentry;	/*+1e ƒ‚ƒWƒ…[ƒ‹QÆƒe[ƒuƒ‹‚ÌƒGƒ“ƒgƒŠ[” */
-    short   nrtablesize;/*+1e ”ñí’“–¼ƒe[ƒuƒ‹‚ÌƒoƒCƒg” */
+    short   segentry;   /*+1c ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ†ãƒ¼ãƒ–ãƒ«ã®ã‚¨ãƒ³ãƒˆãƒªæ•° */
+    short   modentry;	/*+1e ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å‚ç…§ãƒ†ãƒ¼ãƒ–ãƒ«ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼æ•° */
+    short   nrtablesize;/*+1e éå¸¸é§åãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒã‚¤ãƒˆæ•° */
 
-    short   seg_table;  /*+22 ƒZƒOƒƒ“ƒgƒe[ƒuƒ‹‚Ö‚ÌƒIƒtƒZƒbƒg('NE'‚©‚ç) */
-    short   res_table;  /*+24 ƒŠƒ\[ƒX  ƒe[ƒuƒ‹‚Ö‚ÌƒIƒtƒZƒbƒg('NE'‚©‚ç) */
-    short   nam_table;  /*+26 í’“–¼    ƒe[ƒuƒ‹‚Ö‚ÌƒIƒtƒZƒbƒg('NE'‚©‚ç) */
-    short   ref_table;  /*+28 ƒ‚ƒWƒ…[ƒ‹QÆƒe[ƒuƒ‹‚Ö‚ÌƒIƒtƒZƒbƒg('NE'‚©‚ç) */
-    short   imp_table;  /*+2a ƒCƒ“ƒ|[ƒgƒe[ƒuƒ‹‚Ö‚ÌƒIƒtƒZƒbƒg('NE'‚©‚ç) */
-    long    nrt_table;  /*+2c ”ñí’“–¼  ƒe[ƒuƒ‹‚Ö‚ÌƒIƒtƒZƒbƒg(EXEæ“ª‚©‚ç) */
-    short   movables;   /*+30 ˆÚ“®‰Â”\‚ÈƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg‚Ì” */
-    short   align;      /*+32 ˜_—ƒZƒNƒ^ƒAƒ‰ƒCƒ“ƒƒ“ƒg‚ÌƒVƒtƒg”(2^n‚Ìn) */
-    short   rsvsegs;    /*+34 —\–ñƒZƒOƒƒ“ƒg” */
-    char    rsv[10];    /*+36`3f */
+    short   seg_table;  /*+22 ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ†ãƒ¼ãƒ–ãƒ«ã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ('NE'ã‹ã‚‰) */
+    short   res_table;  /*+24 ãƒªã‚½ãƒ¼ã‚¹  ãƒ†ãƒ¼ãƒ–ãƒ«ã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ('NE'ã‹ã‚‰) */
+    short   nam_table;  /*+26 å¸¸é§å    ãƒ†ãƒ¼ãƒ–ãƒ«ã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ('NE'ã‹ã‚‰) */
+    short   ref_table;  /*+28 ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å‚ç…§ãƒ†ãƒ¼ãƒ–ãƒ«ã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ('NE'ã‹ã‚‰) */
+    short   imp_table;  /*+2a ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ†ãƒ¼ãƒ–ãƒ«ã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ('NE'ã‹ã‚‰) */
+    int     nrt_table;  /*+2c éå¸¸é§å  ãƒ†ãƒ¼ãƒ–ãƒ«ã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ(EXEå…ˆé ­ã‹ã‚‰) */
+    short   movables;   /*+30 ç§»å‹•å¯èƒ½ãªã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆã®æ•° */
+    short   align;      /*+32 è«–ç†ã‚»ã‚¯ã‚¿ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆã®ã‚·ãƒ•ãƒˆæ•°(2^nã®n) */
+    short   rsvsegs;    /*+34 äºˆç´„ã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ•° */
+    char    rsv[10];    /*+36ã€œ3f */
 } EXE_NEW_HDR;
 
 
 typedef struct  SEGTABLE {
-    Ushort  offset;     /*+00 ˜_—ƒZƒNƒ^ƒIƒtƒZƒbƒg(byte)  0‚È‚çƒf[ƒ^–³‚µ */
-    Ushort  size;       /*+02 ƒZƒOƒƒ“ƒgƒTƒCƒY(byte) 0‚È‚ç64kB */
+    Ushort  offset;     /*+00 è«–ç†ã‚»ã‚¯ã‚¿ã‚ªãƒ•ã‚»ãƒƒãƒˆ(byte)  0ãªã‚‰ãƒ‡ãƒ¼ã‚¿ç„¡ã— */
+    Ushort  size;       /*+02 ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚µã‚¤ã‚º(byte) 0ãªã‚‰64kB */
     short   flag;       /*+04 0000:CODE */
                         /*    0001:DATA */
                         /*    0007:TYPE_MASK */
                         /*    0010:MOVABLE */
                         /*    0040:PRELOAD */
-                        /*    0100:RELOCINFO   ƒŠƒƒP[ƒVƒ‡ƒ“î•ñ‚ ‚è */
-                        /*    F000:DISCARDABLE ”pŠü‰Â”\ */
-    Ushort  allocsize;  /*+06 Å¬Š„“–ƒTƒCƒY(byte)=ƒg[ƒ^ƒ‹ƒTƒCƒY  0‚È‚ç64kB */
+                        /*    0100:RELOCINFO   ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚ã‚Š */
+                        /*    F000:DISCARDABLE å»ƒæ£„å¯èƒ½ */
+    Ushort  allocsize;  /*+06 æœ€å°å‰²å½“ã‚µã‚¤ã‚º(byte)=ãƒˆãƒ¼ã‚¿ãƒ«ã‚µã‚¤ã‚º  0ãªã‚‰64kB */
 } SEGTABLE ;
 
-typedef	struct	MOVABLE {/* flg==ff‚Ì. ‚UƒoƒCƒg */
-	Uchar	key;		/*	ƒL[ƒ[ƒh 01:EXPORTED 02:SHARED */
+typedef	struct	MOVABLE {/* flg==ffã®æ™‚. ï¼–ãƒã‚¤ãƒˆ */
+	Uchar	key;		/*	ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ 01:EXPORTED 02:SHARED */
 	Uchar	int3f[2];	/*  CD 3F */
 	Uchar	segnum;
 	Ushort	offset;
 } MOVABLE;
 
-typedef	struct	FIXED {	/* flg==xx‚Ì. ‚RƒoƒCƒg */
-	Uchar	key;		/*	ƒL[ƒ[ƒh 01:EXPORTED 02:SHARED */
-/*	Ushort	offset;		 * segment fixup word‚Ö‚ÌƒIƒtƒZƒbƒg */
+typedef	struct	FIXED {	/* flg==xxã®æ™‚. ï¼“ãƒã‚¤ãƒˆ */
+	Uchar	key;		/*	ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ 01:EXPORTED 02:SHARED */
+/*	Ushort	offset;		 * segment fixup wordã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
 	Uchar	offset_l;
 	Uchar	offset_h;
 } FIXED;
@@ -110,7 +111,7 @@ typedef	struct	ENTRYTABLE {
 	} u;
 } ENTRYTABLE;
 
-typedef	struct NRT {		/* ”ñí’“–¼‚ğ‹L‰¯‚·‚éƒe[ƒuƒ‹ */
+typedef	struct NRT {		/* éå¸¸é§åã‚’è¨˜æ†¶ã™ã‚‹ãƒ†ãƒ¼ãƒ–ãƒ« */
 	char *name;
 	int   seg;
 	int   off;
@@ -124,7 +125,7 @@ typedef	struct API_DB {
 	int   ordinal;
 } API_DB;
 
-/* ƒŠƒƒP[ƒVƒ‡ƒ“î•ñ‚ÌŒã”¼‚SƒoƒCƒg‚Ì\‘¢ */
+/* ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã®å¾ŒåŠï¼”ãƒã‚¤ãƒˆã®æ§‹é€  */
 typedef struct I_REF {
 	Uchar  segnum;
 	Uchar  dummy;
@@ -143,10 +144,10 @@ typedef struct I_OSFIXUP {
 	Ushort dummy;
 } I_OSFIXUP;
 
-/* ƒŠƒƒP[ƒVƒ‡ƒ“î•ñ‚WƒoƒCƒg‚Ì\‘¢ */
-/* ƒf[ƒ^ÅI”Ô’n‚É dw REL_COUNT; */
-/* ‚»‚ÌŒã‚ë‚É REL_COUNT ŒÂ”‚ÌƒŠƒƒP[ƒVƒ‡ƒ“EƒŒƒR[ƒh‚ª•À‚Ô */
-typedef struct REL {		/* ƒŠƒƒP[ƒVƒ‡ƒ“ƒe[ƒuƒ‹ */
+/* ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ï¼˜ãƒã‚¤ãƒˆã®æ§‹é€  */
+/* ãƒ‡ãƒ¼ã‚¿æœ€çµ‚ç•ªåœ°ã« dw REL_COUNT; */
+/* ãã®å¾Œã‚ã« REL_COUNT å€‹æ•°ã®ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ»ãƒ¬ã‚³ãƒ¼ãƒ‰ãŒä¸¦ã¶ */
+typedef struct REL {		/* ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ãƒ¼ãƒ–ãƒ« */
 	Uchar  type;
 	Uchar  flag;
 	Ushort off;
@@ -163,39 +164,39 @@ typedef struct REL {		/* ƒŠƒƒP[ƒVƒ‡ƒ“ƒe[ƒuƒ‹ */
 #define T_FAR_ADDR   0x03  		/*(32-bit pointer)*/
 #define T_OFFSET     0x05  		/*(16-bit offset)*/
 
-#define F_INTERNALREF	0		/* 00 “à•”QÆ */
-#define	F_IMPORTORDINAL 1		/* 01 ‚c‚k‚kQÆ.ƒGƒ“ƒgƒŠ[˜”‚Åw’è */
-#define	F_IMPORTNAME    2		/* 10 ‚c‚k‚kQÆ.ƒGƒ“ƒgƒŠ[–¼‚Åw’è */
-#define	F_OSFIXUP       3		/* 11 •‚“®¬”“_‰‰Z‚Ì–½—ß‚ğfixup‚·‚éB */
-#define	F_ADDITIVE      4		/* ’Ç‰Áî•ñ‚ª—L‚é‚±‚Æ‚ğ¦‚·B */
+#define F_INTERNALREF	0		/* 00 å†…éƒ¨å‚ç…§ */
+#define	F_IMPORTORDINAL 1		/* 01 ï¼¤ï¼¬ï¼¬å‚ç…§.ã‚¨ãƒ³ãƒˆãƒªãƒ¼åºæ•°ã§æŒ‡å®š */
+#define	F_IMPORTNAME    2		/* 10 ï¼¤ï¼¬ï¼¬å‚ç…§.ã‚¨ãƒ³ãƒˆãƒªãƒ¼åã§æŒ‡å®š */
+#define	F_OSFIXUP       3		/* 11 æµ®å‹•å°æ•°ç‚¹æ¼”ç®—ã®å‘½ä»¤ã‚’fixupã™ã‚‹ã€‚ */
+#define	F_ADDITIVE      4		/* è¿½åŠ æƒ…å ±ãŒæœ‰ã‚‹ã“ã¨ã‚’ç¤ºã™ã€‚ */
 
 
 #ifdef	LINUX
 #define	CRLF	"\n"
 #else
-#define	CRLF	"\r\n"			/* •sK‚ÈMS-DOS‚ÍƒeƒLƒXƒgƒI[ƒvƒ“‚·‚é‚Æ’x‚¢ */
-#endif							/* ‚Ì‚ÅƒoƒCƒiƒŠ[‚Å‘‚­‚½‚ß‚Ì•¶š—ñ */
+#define	CRLF	"\r\n"			/* ä¸å¹¸ãªMS-DOSã¯ãƒ†ã‚­ã‚¹ãƒˆã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹ã¨é…ã„ */
+#endif							/* ã®ã§ãƒã‚¤ãƒŠãƒªãƒ¼ã§æ›¸ããŸã‚ã®æ–‡å­—åˆ— */
 
 char   *xstrdup(  char *s );
 char   *xstrpdup( char *s );
-char   *xmalloc( long size);
+char   *xmalloc( int size);
 void	init_hash(void);
 void	clr_hash(void);
 void	clr_hash2(void);
-void	insert_hash2(long val,int flg,char *obj);
-void	insert_hash(long val,int flg,char *obj);
+void	insert_hash2(int val,int flg,char *obj);
+void	insert_hash(int val,int flg,char *obj);
 void	hash_report(void);
-long	disasm_i386(char *buf,long start,long size,FILE *ofp);
+int	disasm_i386(char *buf,int start,int size,FILE *ofp);
 void	spool_init(void);
 void	pe_dump(void);
 void	le_dump(void);
-void	dump_out(FILE *fp,unsigned char *buf,long cutsize,long start);
-void	code32_dump(int segnum,char *sectname,long off,long siz,long start,long size);
+void	dump_out(FILE *fp,unsigned char *buf,int cutsize,int start);
+void	code32_dump(int segnum,char *sectname,int off,int siz,int start,int size);
 void	set_cpumode(int op,int ad);
 
-/***  ƒvƒƒgƒ^ƒCƒvéŒ¾@***/
+/***  ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€ã€€***/
 int		main(int argc,char **argv);
-void 	raw386_dump(long ofs,int cpumode);
+void 	raw386_dump(int ofs,int cpumode);
 void	old_exe_dump(void);
 void	ne_dump(void);
 void	sys_report(void);
@@ -209,7 +210,7 @@ int		api_id(char *s);
 void	insert_api(char *modname,int ordinal,char *entname);
 int		search_api(char *s,int ordinal,char *namebuf);
 void	MZchk(void);
-void	NEseek(long l);
+void	NEseek(int l);
 void	NEload(void);
 void	NEchk(void);
 void	SEGTload(void);
@@ -220,15 +221,15 @@ void	dump(unsigned char *buf,int siz);
 void	ENTdump(void);
 void	pr_ent(int entnum,int seg,int off);
 void	SEGTdump(void);
-void	loadbin(long off,long size);
-void	cutbin(char *name,long size);
-void	cuthex(char *name,long size);
-void	rel_dump(int segnum,long off,long siz);
+void	loadbin(int off,int size);
+void	cutbin(char *name,int size);
+void	cuthex(char *name,int size);
+void	rel_dump(int segnum,int off,int siz);
 void	rel_print(REL *r);
 int 	get_rword(int off);
 void	rel_chain(REL *r);
-void	disasmbin(char *name,long start,long size,char *hdrmsg);
-void	gen_dummy_hdr(char *s,long l);
+void	disasmbin(char *name,int start,int size,char *hdrmsg);
+void	gen_dummy_hdr(char *s,int l);
 void	nrt_dump(Uchar *s);
 int 	get_nrtnam(int val);
 void	print_nrtname(int entnum,int seg,int off);

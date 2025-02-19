@@ -1,29 +1,26 @@
 /**********************************************************************
- *  ‚c‚h‚r‚v‚h‚mi‚v‚‰‚‚„‚‚—‚“—p‹tƒAƒZƒ“ƒuƒ‰j
+ *  ï¼¤ï¼©ï¼³ï¼·ï¼©ï¼®ï¼ˆï¼·ï½‰ï½ï½„ï½ï½—ï½“ç”¨é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ©ï¼‰
  **********************************************************************
  *  Borland-C++ 4.0J/3.1 or Turbo-C 2.0  LARGE MODEL 
  *    Compile option= -O -ml -w-rvl -w-pro
  *
- *  g‚¢•ûF
+ *  ä½¿ã„æ–¹ï¼š
  *      DISWIN -Option filename[.EXE .DLL]
- *  ƒIƒvƒVƒ‡ƒ“F
- *   -b    ƒZƒOƒƒ“ƒg‰»‚³‚ê‚½ƒoƒCƒiƒŠ[‚ğo—Í‚·‚é
- *   -s    ‹tƒAƒZƒ“ƒuƒ‹ƒ\[ƒXƒtƒ@ƒCƒ‹‚ğo—Í‚·‚é
- *   -u    ‹tƒAƒZƒ“ƒuƒ‹ƒŠƒXƒg‚ğ‘å•¶š‚Åo—Í
- *   -t    ƒGƒ“ƒgƒŠ[ƒe[ƒuƒ‹‚ğ•\¦‚·‚éƒ‚[ƒh
- *   -r    ƒŠƒƒP[ƒVƒ‡ƒ“î•ñ‚ğ•\¦‚·‚éƒ‚[ƒh
- *   -x    ‚d‚w‚o‚n‚q‚s‚³‚ê‚½ƒGƒ“ƒgƒŠ[‚ÌƒŠƒXƒg‚Ì‚İ•\¦‚·‚é
+ *  ã‚ªãƒ—ã‚·ãƒ§ãƒ³ï¼š
+ *   -b    ã‚»ã‚°ãƒ¡ãƒ³ãƒˆåŒ–ã•ã‚ŒãŸãƒã‚¤ãƒŠãƒªãƒ¼ã‚’å‡ºåŠ›ã™ã‚‹
+ *   -s    é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ã‚½ãƒ¼ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‡ºåŠ›ã™ã‚‹
+ *   -u    é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ãƒªã‚¹ãƒˆã‚’å¤§æ–‡å­—ã§å‡ºåŠ›
+ *   -t    ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹ãƒ¢ãƒ¼ãƒ‰
+ *   -r    ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’è¡¨ç¤ºã™ã‚‹ãƒ¢ãƒ¼ãƒ‰
+ *   -x    ï¼¥ï¼¸ï¼°ï¼¯ï¼²ï¼´ã•ã‚ŒãŸã‚¨ãƒ³ãƒˆãƒªãƒ¼ã®ãƒªã‚¹ãƒˆã®ã¿è¡¨ç¤ºã™ã‚‹
  *   -v    verbose mode
  *
- *  ’ˆÓF
- *      ƒ‰[ƒWƒ‚ƒfƒ‹‚ª‘O’ñ.
+ *  æ³¨æ„ï¼š
+ *      ãƒ©ãƒ¼ã‚¸ãƒ¢ãƒ‡ãƒ«ãŒå‰æ.
  */
 #define   ADDEXT  1
 #define   GETLN   1
 
-#include  <malloc.h>
-#include  <string.h>
-#include  <ctype.h>
 #include  "std.h"
 #include  "diswin.h"
 
@@ -57,72 +54,72 @@ char versions[] = "0.19";
 
 
 /**********************************************************************
- *  ƒoƒbƒtƒ@ƒTƒCƒY“™‚Ì’è‹`
+ *  ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºç­‰ã®å®šç¾©
  **********************************************************************
  */
-#define REFSIZE     128    /* QÆ–¼ƒe[ƒuƒ‹ */
-#define NRTMAX      1024   /* ”ñí’“–¼ƒe[ƒuƒ‹*/
-#define NRTSIZE     (NRTMAX*sizeof(NRT) )    /* ”ñí’“–¼ƒe[ƒuƒ‹*/
-#define CUTSIZE     0x2000 /* ƒoƒCƒiƒŠ[ƒJƒbƒ^[‚ªg—p‚·‚éƒoƒbƒtƒ@ */
-#define LOADSIZE    0x4000 /* ƒoƒCƒiƒŠƒ[ƒ_‚ªˆê“x‚Éƒ[ƒh‰Â”\‚ÈƒTƒCƒY */
-#define RELSIZE     0xc000L/* ƒŠƒƒP[ƒVƒ‡ƒ“î•ñ‚ğ‹L‰¯‚·‚éƒoƒbƒtƒ@ */
-#define SPOOLSIZE   0xff00L/* •¶š—ñƒoƒbƒtƒ@ */
-#define	API_DBMAX	20000   /* diswin.api ‚Ì“o˜^” */
+#define REFSIZE     128    /* å‚ç…§åãƒ†ãƒ¼ãƒ–ãƒ« */
+#define NRTMAX      1024   /* éå¸¸é§åãƒ†ãƒ¼ãƒ–ãƒ«*/
+#define NRTSIZE     (NRTMAX*sizeof(NRT) )    /* éå¸¸é§åãƒ†ãƒ¼ãƒ–ãƒ«*/
+#define CUTSIZE     0x2000 /* ãƒã‚¤ãƒŠãƒªãƒ¼ã‚«ãƒƒã‚¿ãƒ¼ãŒä½¿ç”¨ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ */
+#define LOADSIZE    0x4000 /* ãƒã‚¤ãƒŠãƒªãƒ­ãƒ¼ãƒ€ãŒä¸€åº¦ã«ãƒ­ãƒ¼ãƒ‰å¯èƒ½ãªã‚µã‚¤ã‚º */
+#define RELSIZE     0xc000L/* ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’è¨˜æ†¶ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ */
+#define SPOOLSIZE   0xff00L/* æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡ */
+#define	API_DBMAX	20000   /* diswin.api ã®ç™»éŒ²æ•° */
 
-#define API_DBSIZE (sizeof(API_DB)*API_DBMAX)/* API Database ƒoƒbƒtƒ@ */
-#define RELMAX     (RELSIZE/sizeof(REL))/* ƒŠƒƒP[ƒVƒ‡ƒ“ƒoƒbƒtƒ@‚ÌÅ‘åŒÂ” */
+#define API_DBSIZE (sizeof(API_DB)*API_DBMAX)/* API Database ãƒãƒƒãƒ•ã‚¡ */
+#define RELMAX     (RELSIZE/sizeof(REL))/* ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒãƒƒãƒ•ã‚¡ã®æœ€å¤§å€‹æ•° */
 #define ifnq        if(quietmode==0)
 /**********************************************************************
- *  ‹¤—Lƒ[ƒNƒGƒŠƒA
+ *  å…±æœ‰ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
  **********************************************************************
  */
 EXE_OLD_HDR oldhdr;             /* OLD EXE Header       */
 EXE_NEW_HDR ne;                 /* Windows EXE Header   */
 SEGTABLE    segt[128];           /* SEGMENT TABLE        */
 
-char    inpname[80];            /* “ü—Íƒtƒ@ƒCƒ‹–¼       */
-char    mapname[80];            /* “ü—Íƒtƒ@ƒCƒ‹–¼       */
-char   *cutbuf;                 /* ƒoƒCƒiƒŠ[ƒJƒbƒ^‚Ìƒoƒbƒtƒ@ */
-extern	char   *spool;          /* •¶š—ñƒv[ƒ‹—Ìˆæ     */
-extern	char   *splp;			/* •¶š—ñƒv[ƒ‹—Ìˆæ‚Ìg—pƒ|ƒCƒ“ƒ^ */
-Ushort  refname[REFSIZE];       /* QÆ–¼(file offset)  */
-char   *modname[REFSIZE];       /* QÆ–¼(string table) */
-char   *strtable;				/* •¶š—ñƒe[ƒuƒ‹(2048byte) */
-API_DB *api_db;					/* API Databaseƒe[ƒuƒ‹‚ÌƒAƒhƒŒƒX */
-int     api_dbmax=0;			/* API Databaseƒe[ƒuƒ‹‚Ì“o˜^ŒÂ” */
-char   *api_module[256];        /* API Database ‚Ìƒ‚ƒWƒ…[ƒ‹–¼ƒe[ƒuƒ‹ */
-int     api_modmax;        		/* API Database ‚Ìƒ‚ƒWƒ…[ƒ‹–¼‘” */
+char    inpname[80];            /* å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«å       */
+char    mapname[80];            /* å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«å       */
+char   *cutbuf;                 /* ãƒã‚¤ãƒŠãƒªãƒ¼ã‚«ãƒƒã‚¿ã®ãƒãƒƒãƒ•ã‚¡ */
+extern	char   *spool;          /* æ–‡å­—åˆ—ãƒ—ãƒ¼ãƒ«é ˜åŸŸ     */
+extern	char   *splp;			/* æ–‡å­—åˆ—ãƒ—ãƒ¼ãƒ«é ˜åŸŸã®ä½¿ç”¨ãƒã‚¤ãƒ³ã‚¿ */
+Ushort  refname[REFSIZE];       /* å‚ç…§å(file offset)  */
+char   *modname[REFSIZE];       /* å‚ç…§å(string table) */
+char   *strtable;				/* æ–‡å­—åˆ—ãƒ†ãƒ¼ãƒ–ãƒ«(2048byte) */
+API_DB *api_db;					/* API Databaseãƒ†ãƒ¼ãƒ–ãƒ«ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ */
+int     api_dbmax=0;			/* API Databaseãƒ†ãƒ¼ãƒ–ãƒ«ã®ç™»éŒ²å€‹æ•° */
+char   *api_module[256];        /* API Database ã®ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«åãƒ†ãƒ¼ãƒ–ãƒ« */
+int     api_modmax;        		/* API Database ã®ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«åç·æ•° */
 
 
-int     segnum;                 /* ƒZƒOƒƒ“ƒg”Ô†       */
-NRT     *nrt;					/* ”ñí’“–¼‚ğ‹L‰¯‚·‚éƒe[ƒuƒ‹ */
-int     nrtmax=0;               /* ”ñí’“–¼‚ğ‹L‰¯‚·‚éƒe[ƒuƒ‹‚Ì—v‘f” */
+int     segnum;                 /* ã‚»ã‚°ãƒ¡ãƒ³ãƒˆç•ªå·       */
+NRT     *nrt;					/* éå¸¸é§åã‚’è¨˜æ†¶ã™ã‚‹ãƒ†ãƒ¼ãƒ–ãƒ« */
+int     nrtmax=0;               /* éå¸¸é§åã‚’è¨˜æ†¶ã™ã‚‹ãƒ†ãƒ¼ãƒ–ãƒ«ã®è¦ç´ æ•° */
 
-char    nulstr[]="";            /* ‚m‚t‚k‚k•¶š—ñ */
-char   *myself="(unknown)";     /* ©•ª‚ğ¦‚·–¼‘O */
-char   *loadbuf;                /* ƒoƒCƒiƒŠ[‚ğƒ[ƒh‚·‚éƒoƒbƒtƒ@ */
-REL    *relbuf;                 /* ƒŠƒƒP[ƒVƒ‡ƒ“î•ñ‚ğ•Û */
-char   *vbuf;					/* setvbuf()‚ğg‚Á‚Ä“üo—Í‚ğ‚‘¬‰» */
-int     relmax;					/* Win16:ƒŠƒƒP[ƒVƒ‡ƒ“î•ñ‚ÌƒoƒCƒg” */
-int     uppermode=0;			/* 1:‘S‚Ä‘å•¶š‚Åo—Í‚·‚é       */
-int     quietmode=0;			/* 1:Ãl 16:16only 32:32only	*/
-int     filtermode=1;			/* 1:ƒ\[ƒX‚ğŒ©‚â‚·‚­‚·‚éˆ—‚ğ‚·‚é */
-int     commentmode=1;			/* 1:“K“–‚ÈƒRƒƒ“ƒg‚ğ“ü‚ê‚é     */
-char    apiname[80]="DISWIN.API";	/* APIƒf[ƒ^ƒx[ƒX‚Ìƒtƒ@ƒCƒ‹–¼ */
-char   *search_hash(long val,int flg);
-char   *search_hash2(long val,int flg);
+char    nulstr[]="";            /* ï¼®ï¼µï¼¬ï¼¬æ–‡å­—åˆ— */
+char   *myself="(unknown)";     /* è‡ªåˆ†ã‚’ç¤ºã™åå‰ */
+char   *loadbuf;                /* ãƒã‚¤ãƒŠãƒªãƒ¼ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ */
+REL    *relbuf;                 /* ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’ä¿æŒ */
+char   *vbuf;					/* setvbuf()ã‚’ä½¿ã£ã¦å…¥å‡ºåŠ›ã‚’é«˜é€ŸåŒ– */
+int     relmax;					/* Win16:ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã®ãƒã‚¤ãƒˆæ•° */
+int     uppermode=0;			/* 1:å…¨ã¦å¤§æ–‡å­—ã§å‡ºåŠ›ã™ã‚‹       */
+int     quietmode=0;			/* 1:é™ç²› 16:16only 32:32only	*/
+int     filtermode=1;			/* 1:ã‚½ãƒ¼ã‚¹ã‚’è¦‹ã‚„ã™ãã™ã‚‹å‡¦ç†ã‚’ã™ã‚‹ */
+int     commentmode=1;			/* 1:é©å½“ãªã‚³ãƒ¡ãƒ³ãƒˆã‚’å…¥ã‚Œã‚‹     */
+char    apiname[80]="DISWIN.API";	/* APIãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã®ãƒ•ã‚¡ã‚¤ãƒ«å */
+char   *search_hash(int val,int flg);
+char   *search_hash2(int val,int flg);
 
-char    srcname[64]="seg_";		/* ‹tƒAƒZƒ“ƒuƒ‹ƒŠƒXƒg    ‚Ìƒtƒ@ƒCƒ‹–¼prefix */
-char    binname[64]="seg_";		/* ƒZƒOƒƒ“ƒg•ªŠ„ƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹–¼prefix */
-char    hexname[64]="seg_";		/* ‚P‚Uiƒ_ƒ“ƒvƒŠƒXƒg    ‚Ìƒtƒ@ƒCƒ‹–¼prefix */
+char    srcname[64]="seg_";		/* é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ãƒªã‚¹ãƒˆ    ã®ãƒ•ã‚¡ã‚¤ãƒ«åprefix */
+char    binname[64]="seg_";		/* ã‚»ã‚°ãƒ¡ãƒ³ãƒˆåˆ†å‰²ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«åprefix */
+char    hexname[64]="seg_";		/* ï¼‘ï¼–é€²ãƒ€ãƒ³ãƒ—ãƒªã‚¹ãƒˆ    ã®ãƒ•ã‚¡ã‚¤ãƒ«åprefix */
 
 /**********************************************************************
- *  ŠÖ”ƒvƒƒgƒ^ƒCƒv
+ *  é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—
  **********************************************************************
  */
 
 /**********************************************************************
- *  g‚¢•û
+ *  ä½¿ã„æ–¹
  **********************************************************************
  */
 void usage(void) {
@@ -137,7 +134,7 @@ void usage(void) {
         "    -b<name>  generate binary segment\n"
         "    -s<name>  generate source segment\n"
         "    -h<name>  generate hex dump (.data section)\n"
-        "      -l      (long word dump)\n"
+        "      -l      (int word dump)\n"
         "    -u    list upper case\n"
         "    -t    display entry table\n"
         "    -r    display relocation table\n"
@@ -154,7 +151,7 @@ void usage(void) {
 }
 
 /**********************************************************************
- *  ‚‚‚‰‚
+ *  ï½ï½ï½‰ï½
  **********************************************************************
  */
 int		main(int argc,char **argv)
@@ -190,7 +187,7 @@ int		main(int argc,char **argv)
         }
         ifopt('s') {
                 if(*Opt('s')) strcpy(srcname,Opt('s'));
-                load_apilist(apiname);	/* DISWIN.API‚ğ“Ç‚İ‚Ş*/
+                load_apilist(apiname);	/* DISWIN.APIã‚’èª­ã¿è¾¼ã‚€*/
         }
         ifopt('b') {
                 if(*Opt('b')) strcpy(binname,Opt('b'));
@@ -200,41 +197,41 @@ int		main(int argc,char **argv)
         }
         Ropen(inpname);
         ifopt('c') {
-        		long ofs=0;
-        		sscanf(Opt('c'),"%lx",&ofs);
+        		int ofs=0;
+        		sscanf(Opt('c'),"%x",&ofs);
         		raw386_dump(ofs,286);
         		Rclose();
 		        exit(0);
         }
         ifopt('d') {
-        		long ofs=0;
-        		sscanf(Opt('d'),"%lx",&ofs);
+        		int ofs=0;
+        		sscanf(Opt('d'),"%x",&ofs);
         		raw386_dump(ofs,386);
         		Rclose();
         		exit(0);
         }
         ifopt('e') {
-                MZchk();    /* OLD EXE HEADER‚ğ“Ç‚İo‚·     */
+                MZchk();    /* OLD EXE HEADERã‚’èª­ã¿å‡ºã™     */
         		old_exe_dump();
         		Rclose();
         		exit(0);
         }
         
-        MZchk();        /* OLD EXE HEADER‚ğ“Ç‚İo‚·         */
-        NEload();       /* Windows New EXE HEADER‚ğ“Ç‚İ‚Ş */
+        MZchk();        /* OLD EXE HEADERã‚’èª­ã¿å‡ºã™         */
+        NEload();       /* Windows New EXE HEADERã‚’èª­ã¿è¾¼ã‚€ */
 		if( ne.ne[1] != 'E' ) {
 			printf("fatal:unknown executable format!\n");
 			exit(1);
 		}
 		
         if( ne.ne[0]=='P') {
-            pe_dump();  /* Windows PE Œ`®(Win32)           */
+            pe_dump();  /* Windows PE å½¢å¼(Win32)           */
         }else
         if( ne.ne[0]=='L') {
-            le_dump();  /* Windows LE Œ`®(VxD)             */
+            le_dump();  /* Windows LE å½¢å¼(VxD)             */
         }else{
 		  if(quietmode!=32)
-            ne_dump();  /* Windows NE Œ`®(Win16)           */
+            ne_dump();  /* Windows NE å½¢å¼(Win16)           */
         }
 
         Rclose();
@@ -248,11 +245,11 @@ int		main(int argc,char **argv)
         return 0;
 }
 
-void	raw386_dump(long ofs,int cpumode)
+void	raw386_dump(int ofs,int cpumode)
 {
-	long filesize=0;
+	int filesize=0;
 
-	while( getc(ifp) != EOF ) filesize++;	/*‰“‰ñ‚µ‚È•û–@‚Åƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğ“¾‚é..*/
+	while( getc(ifp) != EOF ) filesize++;	/*é å›ã—ãªæ–¹æ³•ã§ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã‚’å¾—ã‚‹..*/
 	Rseek(0);
 	if(cpumode!=386){
 		set_cpumode(0,0);
@@ -264,8 +261,8 @@ void	raw386_dump(long ofs,int cpumode)
 
 void	old_exe_dump(void)
 {
-	long filesize;
-	long exeofs;
+	int filesize;
+	int exeofs;
 
 	exeofs = oldhdr.reloc_size;
 	exeofs <<= 4;
@@ -283,13 +280,13 @@ void	old_exe_dump(void)
 
 void	ne_dump()
 {
-        NEchk();        /* Windows EXE HEADER ‚ğ“Ç‚İ‚İƒ`ƒFƒbƒN        */
-        SEGTload();     /* ƒZƒOƒƒ“ƒgƒe[ƒuƒ‹‚ğ“Ç‚İ‚Ş                 */
-        MODref();       /* QÆ–¼ƒe[ƒuƒ‹‚ğ“Ç‚İ‚Ş                     */
-        ENTdump();      /* ƒGƒ“ƒgƒŠ[ƒe[ƒuƒ‹‚ğ•\¦‚·‚é                 */
-        insert_label(); /* ƒGƒ“ƒgƒŠ[ƒ‰ƒxƒ‹‚ğƒnƒbƒVƒ…‚É“o˜^‚·‚é         */
-        load_exemap(mapname);/* *.MAPƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚ê‚Î‚»‚ê‚ğ“Ç‚İ‚Ş */
-        ifnq SEGTdump();/* ƒZƒOƒƒ“ƒgƒe[ƒuƒ‹‚ğ•\¦‚·‚é                 */
+        NEchk();        /* Windows EXE HEADER ã‚’èª­ã¿è¾¼ã¿ãƒã‚§ãƒƒã‚¯        */
+        SEGTload();     /* ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ†ãƒ¼ãƒ–ãƒ«ã‚’èª­ã¿è¾¼ã‚€                 */
+        MODref();       /* å‚ç…§åãƒ†ãƒ¼ãƒ–ãƒ«ã‚’èª­ã¿è¾¼ã‚€                     */
+        ENTdump();      /* ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹                 */
+        insert_label(); /* ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒ©ãƒ™ãƒ«ã‚’ãƒãƒƒã‚·ãƒ¥ã«ç™»éŒ²ã™ã‚‹         */
+        load_exemap(mapname);/* *.MAPãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚Œã°ãã‚Œã‚’èª­ã¿è¾¼ã‚€ */
+        ifnq SEGTdump();/* ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ†ãƒ¼ãƒ–ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹                 */
 }
 
 void	sys_report()
@@ -344,14 +341,14 @@ char *s;
 
 }
 
-void	read_exemap(s)
-char *s;
+void	read_exemap(char *s)
 {
-        int seg,off,c;
+        int seg,off;
+		char c;
         char *str;
 
         c=0;
-        sscanf(s+1,"%x%c%x",&seg,&c,&off);
+        sscanf(s+1,"%x%c%x",&seg, &c,&off);
 
         if( (c==':')&&(seg!=0) ) {
                 api_db[api_dbmax].module_id= 0;
@@ -359,7 +356,10 @@ char *s;
                 api_db[api_dbmax].name     = xstrdup( s+17 );
                 
                 insert_hash2(off,seg,(char *)&api_db[api_dbmax]);
-				ifopt('Z') printf("map %d:%04x %s [%d]\n",seg,off,api_db[api_dbmax].name );
+				ifopt('Z') {
+//					printf("map %d:%04x %s [%d]\n",seg,off,api_db[api_dbmax].name );
+					printf("map %d:%04x %s \n",seg,off,api_db[api_dbmax].name );
+				}
                 api_dbmax++;
                 if(api_dbmax >= API_DBMAX) {
     	            printf("fatal:API database full (map file)\n");
@@ -369,7 +369,7 @@ char *s;
 }
 
 //
-//	•¶š—ñ‚ğ‹ó”’‹æØ‚è‚Å•ªŠ„‚·‚é.
+//	æ–‡å­—åˆ—ã‚’ç©ºç™½åŒºåˆ‡ã‚Šã§åˆ†å‰²ã™ã‚‹.
 //
 static	char *exemap_symcut(char *buf,int *off)
 {
@@ -382,22 +382,22 @@ static	char *exemap_symcut(char *buf,int *off)
 
 	if(argn<2) return "";
 
-	if(strlen(args[1]) >= 32) { args[1][32] = 0; }	//•¶š—ñ’·‚³‚ğ32byte‚É§ŒÀ.
+	if(strlen(args[1]) >= 32) { args[1][32] = 0; }	//æ–‡å­—åˆ—é•·ã•ã‚’32byteã«åˆ¶é™.
 
 	if(argn>=3) {
 		sscanf(args[2],"%x",off);
 	}
 
-	return strdup(args[1]);	//‚Q”Ô–Ú‚Ì•¶š—ñ=symbol–¼ ‚ğ•Ô‚·.
+	return strdup(args[1]);	//ï¼’ç•ªç›®ã®æ–‡å­—åˆ—=symbolå ã‚’è¿”ã™.
 }
 
 //
-//	PEƒ‚[ƒh‚Å‚Ìmapƒtƒ@ƒCƒ‹“Ç‚İ‚İ.
+//	PEãƒ¢ãƒ¼ãƒ‰ã§ã®mapãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿.
 //
-void	read_exemap32(s)
-char *s;
+void	read_exemap32(char *s)
 {
-        int seg,off,c;
+        int seg,off;
+	    char c;
         char *str;
 
         c=0;
@@ -450,7 +450,7 @@ void	read_apilist(char *s)
         *s++ = 0;
         sscanf(ordstr,"%d",&ordinal);
         
-        while(*s) { if(*s!='\t') break; s++;}   /* ƒ^ƒuƒXƒLƒbƒv */
+        while(*s) { if(*s!='\t') break; s++;}   /* ã‚¿ãƒ–ã‚¹ã‚­ãƒƒãƒ— */
         entname = s;
         
         if( (*s!=0)&&(*s!='(') )
@@ -511,12 +511,12 @@ int		search_api(char *s,int ordinal,char *namebuf)
 }
 
 /**********************************************************************
- *  ‚d‚w‚d@‚n‚k‚c@‚g‚d‚`‚c‚d‚q‚ğƒ`ƒFƒbƒN
+ *  ï¼¥ï¼¸ï¼¥ã€€ï¼¯ï¼¬ï¼¤ã€€ï¼¨ï¼¥ï¼¡ï¼¤ï¼¥ï¼²ã‚’ãƒã‚§ãƒƒã‚¯
  **********************************************************************
  */
 void	MZchk()
 {
-        Read(&oldhdr,sizeof(oldhdr));
+        int rc = Read(&oldhdr,sizeof(oldhdr));
 
         if( (oldhdr.mz[0]=='M') && (oldhdr.mz[1]=='Z') ) return ;
         if( (oldhdr.mz[0]=='Z') && (oldhdr.mz[1]=='M') ) return ;
@@ -526,10 +526,10 @@ void	MZchk()
 }
 
 /**********************************************************************
- *  ‚m‚d@‚g‚d‚`‚c‚d‚q‚Ü‚ÅƒV[ƒN‚·‚éB
+ *  ï¼®ï¼¥ã€€ï¼¨ï¼¥ï¼¡ï¼¤ï¼¥ï¼²ã¾ã§ã‚·ãƒ¼ã‚¯ã™ã‚‹ã€‚
  **********************************************************************
  */
-void	NEseek(long l)
+void	NEseek(int l)
 {
         char    buf[32];
 
@@ -543,36 +543,36 @@ void	NEseek(long l)
 void	NEload(void)
 {
 	NEseek(0);
-    Read(&ne,sizeof(ne));
+    int rc = Read(&ne,sizeof(ne));
 }
 /**********************************************************************
- *  ‚m‚…‚—‚d‚w‚dƒwƒbƒ_[‚ğ“Ç‚İ‚ñ‚Åƒ`ƒFƒbƒN‚·‚éB
+ *  ï¼®ï½…ï½—ï¼¥ï¼¸ï¼¥ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’èª­ã¿è¾¼ã‚“ã§ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã€‚
  **********************************************************************
  */
 void	NEchk(void)
 {
         char    name[128];
         if( (ne.ne[0]=='N') && (ne.ne[1]=='E') ) {
-                printf("filename    : %s\n",inpname);   /* ƒtƒ@ƒCƒ‹–¼ */
+                printf("filename    : %s\n",inpname);   /* ãƒ•ã‚¡ã‚¤ãƒ«å */
                 printf("link version: %d.%d\n",ne.ver,ne.rev);
           if(ne.flag & 0x8000) {
-                printf("exe type    : library\n");      /* ‚c‚k‚k */
+                printf("exe type    : library\n");      /* ï¼¤ï¼¬ï¼¬ */
           }else{
-                printf("exe type    : program\n");      /* ‚d‚w‚d */
+                printf("exe type    : program\n");      /* ï¼¥ï¼¸ï¼¥ */
           }
                 printf("start addres: seg_%02x:%04x\n",ne.init_cs,ne.init_ip);
                 Rseek(ne.nrt_table);
-                Read(cutbuf,CUTSIZE);
-                printf("description : ");printstr(cutbuf);/* à–¾ */
+                int rc = Read(cutbuf,CUTSIZE);
+                printf("description : ");printstr(cutbuf);/* èª¬æ˜ */
                 printf("\n");
-                nrt_dump(cutbuf);             /* ”ñí’“–¼ƒe[ƒuƒ‹ */
+                nrt_dump(cutbuf);             /* éå¸¸é§åãƒ†ãƒ¼ãƒ–ãƒ« */
 
-                NEseek(ne.nam_table);           /* ‚m‚dƒwƒbƒ_[   */
-                Read(cutbuf,CUTSIZE);
-                printf("module name : ");printstr(cutbuf);/*ƒ‚ƒWƒ…[ƒ‹–¼*/
+                NEseek(ne.nam_table);           /* ï¼®ï¼¥ãƒ˜ãƒƒãƒ€ãƒ¼   */
+                rc = Read(cutbuf,CUTSIZE);
+                printf("module name : ");printstr(cutbuf);/*ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å*/
                 printf("\n");
                 myself = xstrpdup(cutbuf);
-                nrt_dump(cutbuf);             /* ”ñí’“–¼ƒe[ƒuƒ‹ */
+                nrt_dump(cutbuf);             /* éå¸¸é§åãƒ†ãƒ¼ãƒ–ãƒ« */
                 return ;
         }
         printf("fatal:EXE NEW HEADER ('NE') not found.\n");
@@ -580,16 +580,16 @@ void	NEchk(void)
 }
 
 /**********************************************************************
- *  ƒZƒOƒƒ“ƒgƒe[ƒuƒ‹‚ğƒ[ƒh‚·‚é
+ *  ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
  **********************************************************************
  */
 void	SEGTload(void)
 {
         NEseek(ne.seg_table);
-        Read(segt,ne.segentry * sizeof(segt[0]) );
+        int rc = Read(segt,ne.segentry * sizeof(segt[0]) );
 }
 /**********************************************************************
- *  ƒ‚ƒWƒ…[ƒ‹ƒŠƒtƒ@ƒŒƒ“ƒXƒe[ƒuƒ‹‚ğƒ[ƒh‚·‚éB
+ *  ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ã€‚
  **********************************************************************
  */
 void	MODref(void)
@@ -598,9 +598,9 @@ void	MODref(void)
         Uchar *p;
         
         NEseek(ne.ref_table);
-          Read(refname,REFSIZE );
+          int rc = Read(refname,REFSIZE );
         NEseek(ne.imp_table);
-          Read(strtable,2048);
+          rc = Read(strtable,2048);
 
         printf("module reference:\n");
         for(i=0;i<ne.modentry;i++) {
@@ -636,11 +636,10 @@ void	sprintstr( char *t,char *s)
 
 
 /**********************************************************************
- *  ƒƒ‚ƒŠ[ƒ_ƒ“ƒv
+ *  ãƒ¡ãƒ¢ãƒªãƒ¼ãƒ€ãƒ³ãƒ—
  **********************************************************************
  */
-void	dump(buf,siz)
-unsigned char *buf;
+void	dump(unsigned char *buf,int siz)
 {
         while(siz) {
                 printf(" %02x",*buf++);
@@ -650,7 +649,7 @@ unsigned char *buf;
 }
 
 /**********************************************************************
- *  ƒGƒ“ƒgƒŠ[ƒe[ƒuƒ‹‚ğ•\¦‚·‚é
+ *  ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹
  **********************************************************************
  */
 void	ENTdump()
@@ -663,13 +662,13 @@ void	ENTdump()
         FIXED   *f;
 
         NEseek(ne.entrytable);
-        Read(cutbuf,CUTSIZE);
+        int rc = Read(cutbuf,CUTSIZE);
         p=(Uchar *)cutbuf;
 
         printf("entry table:\n");
 
         while(1) {
-                n=*p++; /*      ƒGƒ“ƒgƒŠ[ŒÂ” */
+                n=*p++; /*      ã‚¨ãƒ³ãƒˆãƒªãƒ¼å€‹æ•° */
                 if(n==0) break;
                 id=*p++;
                 switch(id) {
@@ -685,7 +684,7 @@ void	ENTdump()
                         for(i=0;i<n;i++) {
                                 f=(FIXED *)p;p+=3;
 
-                                /*offsetƒƒ“ƒo[‚ÍŠï”ƒAƒ‰ƒCƒƒ“ƒg‚È‚Ì‚Å*/
+                                /*offsetãƒ¡ãƒ³ãƒãƒ¼ã¯å¥‡æ•°ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆãªã®ã§*/
                                 offset = (f->offset_l)|(f->offset_h<<8);
 
                                 pr_ent(entnum++,id,offset);
@@ -709,14 +708,14 @@ void	pr_ent(int entnum,int seg,int off)
     }
 }
 /**********************************************************************
- *  ƒZƒOƒƒ“ƒgƒe[ƒuƒ‹‚ğ•\¦‚·‚é
+ *  ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ†ãƒ¼ãƒ–ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹
  **********************************************************************
  */
 void	SEGTdump()
 {
         int i,flg;
         Ushort align;
-        long off,siz;
+        int off,siz;
         char *segname;
         char *segnamet[]={
                 "CODE","DATA","SEG2","SEG3",
@@ -730,30 +729,30 @@ void	SEGTdump()
                 clr_hash();
                 flg = segt[i].flag &7;
                 segname = segnamet[ flg ];
-                off=(long) segt[i].offset * align;
-                siz=(long) segt[i].size;
+                off=(int) segt[i].offset * align;
+                siz=(int) segt[i].size;
                 segnum=i+1;
 /*              if(siz==0) siz=0x10000L;        */
-                printf("  seg_%02d      %6lx %6lx %s\n"
+                printf("  seg_%02d      %6x %6x %s\n"
                         ,segnum,off,siz,segname
                 );
 
             loadbin(off,siz);
 
-            if( flg == 0 ) { /* CODE SEGMENT‚Å‚ ‚é */
-                rel_dump(segnum,off,siz);/* ƒŠƒƒP[ƒVƒ‡ƒ“ƒe[ƒuƒ‹ƒ_ƒ“ƒv */
+            if( flg == 0 ) { /* CODE SEGMENTã§ã‚ã‚‹ */
+                rel_dump(segnum,off,siz);/* ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ãƒ¼ãƒ–ãƒ«ãƒ€ãƒ³ãƒ— */
                 insert_fixup();
             }
 
-ifopt('b')      { /* •K—v‚È‚çƒZƒOƒƒ“ƒg‚ğ•ª—£‚µ‚Ä‹tƒAƒZƒ“ƒuƒ‹‚·‚é */
+ifopt('b')      { /* å¿…è¦ãªã‚‰ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚’åˆ†é›¢ã—ã¦é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ã™ã‚‹ */
                 sprintf(cutname,"%s%02d.bin",binname,segnum);/* seg_xx.bin */
                 cutbin (cutname,siz);
                 }
-            if( flg == 0 ) {/* CODE SEGMENT‚Å‚ ‚é */
+            if( flg == 0 ) {/* CODE SEGMENTã§ã‚ã‚‹ */
 ifopt('s')		{
                 sprintf(cutname,"%s%02d.asm",srcname,segnum);/*seg_xx.asm*/
 
-                disasmbin(cutname,0L,siz,NULL);/*‹tƒAƒZƒ“ƒuƒ‹Œ‹‰Ê‚ào—Í‚·‚é */
+                disasmbin(cutname,0L,siz,NULL);/*é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«çµæœã‚‚å‡ºåŠ›ã™ã‚‹ */
 				}
             }else{
 ifopt('h')      { /* add hex dump */
@@ -764,42 +763,42 @@ ifopt('h')      { /* add hex dump */
         }
 }
 /**********************************************************************
- *  ƒoƒCƒiƒŠ[‚ğØ‚èo‚·
+ *  ãƒã‚¤ãƒŠãƒªãƒ¼ã‚’åˆ‡ã‚Šå‡ºã™
  **********************************************************************
  */
-void	loadbin(long off,long size)
+void	loadbin(int off,int size)
 {
         unsigned len;
         char *p;
         
         Rseek(off);
-        p=loadbuf;      /* loadbuf‚É‚Ü‚Æ‚ß‚Ä“Ç‚ß‚ê‚Î—Ç‚¢‚ª.   */
-        /* ƒTƒCƒY‚ª64k‚É‹ß‚­‚È‚é‚Æ“Ç‚ß‚È‚¢‚Ì‚Å16k’PˆÊ‚Å•ªŠ„ƒ[ƒh‚·‚é. */
+        p=loadbuf;      /* loadbufã«ã¾ã¨ã‚ã¦èª­ã‚ã‚Œã°è‰¯ã„ãŒ.   */
+        /* ã‚µã‚¤ã‚ºãŒ64kã«è¿‘ããªã‚‹ã¨èª­ã‚ãªã„ã®ã§16kå˜ä½ã§åˆ†å‰²ãƒ­ãƒ¼ãƒ‰ã™ã‚‹. */
         while(size) {
                 len=LOADSIZE;if(len>size) len=size;
-                Read(  p,len);
+                int rc = Read(  p,len);
                 p    +=  len;
                 size -=  len;
         }
 }
 
 /**********************************************************************
- *  ƒoƒCƒiƒŠ[‚ğØ‚èo‚·
+ *  ãƒã‚¤ãƒŠãƒªãƒ¼ã‚’åˆ‡ã‚Šå‡ºã™
  **********************************************************************
  */
-void	cutbin(char *name,long size)
+void	cutbin(char *name,int size)
 {
         unsigned len;
         char *p;
         
         Wopen(name);
-#if	0	/*ƒ_ƒ~[‚ÌEXEƒwƒbƒ_[‚ğ•t‰Á‚µ‚½‚¢ê‡‚Í 1 ‚É‚·‚é*/
+#if	0	/*ãƒ€ãƒŸãƒ¼ã®EXEãƒ˜ãƒƒãƒ€ãƒ¼ã‚’ä»˜åŠ ã—ãŸã„å ´åˆã¯ 1 ã«ã™ã‚‹*/
         gen_dummy_hdr(cutbuf,size);
                 Write(cutbuf,0x200);
 #endif
 
-        p=loadbuf;      /* loadbuf‚É‚Ü‚Æ‚ß‚Ä“Ç‚ß‚ê‚Î—Ç‚¢‚ª.   */
-        /* ƒTƒCƒY‚ª64k‚É‹ß‚­‚È‚é‚Æ“Ç‚ß‚È‚¢‚Ì‚Å16k’PˆÊ‚Å•ªŠ„ƒ[ƒh‚·‚é. */
+        p=loadbuf;      /* loadbufã«ã¾ã¨ã‚ã¦èª­ã‚ã‚Œã°è‰¯ã„ãŒ.   */
+        /* ã‚µã‚¤ã‚ºãŒ64kã«è¿‘ããªã‚‹ã¨èª­ã‚ãªã„ã®ã§16kå˜ä½ã§åˆ†å‰²ãƒ­ãƒ¼ãƒ‰ã™ã‚‹. */
         while(size) {
                 len=LOADSIZE;if(len>size) len=size;
                 Write( p,len);
@@ -809,15 +808,15 @@ void	cutbin(char *name,long size)
         Wclose();
 }
 
-void	cuthex(char *name,long size)
+void	cuthex(char *name,int size)
 {
         unsigned len;
-        unsigned long start=0;
+        unsigned int start=0;
         char *p;
         
         Wopen(name);
-        p=loadbuf;      /* loadbuf‚É‚Ü‚Æ‚ß‚Ä“Ç‚ß‚ê‚Î—Ç‚¢‚ª.   */
-        /* ƒTƒCƒY‚ª64k‚É‹ß‚­‚È‚é‚Æ“Ç‚ß‚È‚¢‚Ì‚Å16k’PˆÊ‚Å•ªŠ„dump‚·‚é. */
+        p=loadbuf;      /* loadbufã«ã¾ã¨ã‚ã¦èª­ã‚ã‚Œã°è‰¯ã„ãŒ.   */
+        /* ã‚µã‚¤ã‚ºãŒ64kã«è¿‘ããªã‚‹ã¨èª­ã‚ãªã„ã®ã§16kå˜ä½ã§åˆ†å‰²dumpã™ã‚‹. */
         while(size) {
                 len=LOADSIZE;if(len>size) len=size;
 				dump_out(ofp,p,len,start);
@@ -829,10 +828,10 @@ void	cuthex(char *name,long size)
 }
 
 /**********************************************************************
- *  ƒŠƒƒP[ƒVƒ‡ƒ“î•ñ‚ğ•\¦‚·‚é
+ *  ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’è¡¨ç¤ºã™ã‚‹
  **********************************************************************
  */
-void	rel_dump(int segnum,long off,long siz)  /* ƒŠƒƒP[ƒVƒ‡ƒ“ƒe[ƒuƒ‹ƒ_ƒ“ƒv */
+void	rel_dump(int segnum,int off,int siz)  /* ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ãƒ¼ãƒ–ãƒ«ãƒ€ãƒ³ãƒ— */
 {
         int i;
         short m;
@@ -841,21 +840,21 @@ void	rel_dump(int segnum,long off,long siz)  /* ƒŠƒƒP[ƒVƒ‡ƒ“ƒe[ƒuƒ‹ƒ_ƒ“ƒv */
 ifopt('r')printf("relocation table seg_%02d:\n",segnum);
 
         Rseek(off+siz);
-        Read(&m, sizeof(short));
-        Read(relbuf,sizeof(REL)*m);relmax=m;
+        int rc = Read(&m, sizeof(short));
+        rc = Read(relbuf,sizeof(REL)*m);relmax=m;
         r = relbuf;
 ifopt('r')  printf(" ;type flag offset name.ordinal\n");
 
         for(i=0;i<m;i++) {
                 rel_print(r);
-            /* ƒŠƒƒP[ƒVƒ‡ƒ“ƒ`ƒFƒCƒ“‚ğ’H‚é */
+            /* ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒã‚§ã‚¤ãƒ³ã‚’è¾¿ã‚‹ */
             if((r->flag & F_ADDITIVE)==0) rel_chain(r);
             r++;
         }
 }
 
 /**********************************************************************
- *  ƒŠƒƒP[ƒVƒ‡ƒ“î•ñ‚ğˆê‚Â•\¦‚·‚é
+ *  ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’ä¸€ã¤è¡¨ç¤ºã™ã‚‹
  **********************************************************************
  */
 void	rel_print(REL *r)
@@ -871,8 +870,8 @@ void	rel_print(REL *r)
                         ,r->type
                         ,r->flag
                         ,r->off
-                        ,r->i.i.segnum  /* “à•”ƒZƒOƒƒ“ƒg”Ô† */
-                        ,r->i.i.off     /* “à•”ƒZƒOƒƒ“ƒgƒIƒtƒZƒbƒg */
+                        ,r->i.i.segnum  /* å†…éƒ¨ã‚»ã‚°ãƒ¡ãƒ³ãƒˆç•ªå· */
+                        ,r->i.i.off     /* å†…éƒ¨ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚ªãƒ•ã‚»ãƒƒãƒˆ */
                 );
                 break;
 
@@ -886,8 +885,8 @@ void	rel_print(REL *r)
                         ,r->type
                         ,r->flag
                         ,r->off
-                        ,modulename     /* QÆƒ‚ƒWƒ…[ƒ‹–¼ */
-                        ,r->i.o.ordinal /* ƒGƒ“ƒgƒŠ[‚Ì˜” */
+                        ,modulename     /* å‚ç…§ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å */
+                        ,r->i.o.ordinal /* ã‚¨ãƒ³ãƒˆãƒªãƒ¼ã®åºæ•° */
                 );
                 break;
          case F_IMPORTNAME    :
@@ -896,14 +895,14 @@ void	rel_print(REL *r)
                 }else{
                         modulename = modname[r->i.o.idx-1];
                 }
-                funcstr=&strtable[r->i.n.off];  /* ŒÄ‚Ñ‚¾‚µ–¼ƒe[ƒuƒ‹ */
+                funcstr=&strtable[r->i.n.off];  /* å‘¼ã³ã ã—åãƒ†ãƒ¼ãƒ–ãƒ« */
                 printf("  %02x   %02x   %04x    %s."
                         ,r->type
                         ,r->flag
                         ,r->off
-                        ,modulename     /* QÆƒ‚ƒWƒ…[ƒ‹–¼ */
+                        ,modulename     /* å‚ç…§ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å */
                 );
-                printstr(funcstr);      /* ŒÄ‚Ño‚µ–¼ƒe[ƒuƒ‹ */
+                printstr(funcstr);      /* å‘¼ã³å‡ºã—åãƒ†ãƒ¼ãƒ–ãƒ« */
                 printf( "\n" );
                 break;
          case F_OSFIXUP       :
@@ -911,14 +910,14 @@ void	rel_print(REL *r)
                         ,r->type
                         ,r->flag
                         ,r->off
-                        ,r->i.f.type    /* FIXUP‚Ìƒ^ƒCƒv */
+                        ,r->i.f.type    /* FIXUPã®ã‚¿ã‚¤ãƒ— */
                 );
                 break;
         }
 
 }
 
-get_rword(off)
+int get_rword(int off)
 {
         int h,l;
         l=loadbuf[off]   & 0xff;
@@ -940,13 +939,13 @@ void	rel_chain(REL *r)
                 relbuf[relmax++] = rc;
                 rel_print(&rc);
                 if(relmax>=RELMAX) {
-                        printf("ƒŠƒƒP[ƒVƒ‡ƒ“Eƒ`ƒFƒCƒ“‚É¸”s‚µ‚Ü‚µ‚½.\n");
+                        printf("ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ»ãƒã‚§ã‚¤ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ.\n");
                         exit(1);
                 }
         }
 }
 
-void	disasmbin(char *name,long start,long size,char *hdrmsg)
+void	disasmbin(char *name,int start,int size,char *hdrmsg)
 {
         char oname[128];
         char cmd[128];
@@ -974,7 +973,7 @@ char    dummy_hdr[16]={
 #if	0
 void	gen_dummy_hdr(s,l)
 char *s;
-long l;
+int l;
 {
         int i;
         EXE_OLD_HDR *h;
@@ -992,7 +991,7 @@ long l;
 }
 #endif
 /**********************************************************************
- *  ”ñí’“–¼ƒe[ƒuƒ‹iƒGƒ“ƒgƒŠ[ƒ‰ƒxƒ‹j‚ğ•\¦‚·‚éB
+ *  éå¸¸é§åãƒ†ãƒ¼ãƒ–ãƒ«ï¼ˆã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒ©ãƒ™ãƒ«ï¼‰ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
  **********************************************************************
  */
 void	nrt_dump(s)
@@ -1011,7 +1010,7 @@ Uchar *s;
                 nrt[nrtmax].val  = entnum;
                     nrtmax++;
                 if( nrtmax >= NRTMAX ) {
-                    printf("”ñí’“ƒe[ƒuƒ‹‚ªƒI[ƒo[‚µ‚Ü‚µ‚½.\n");
+                    printf("éå¸¸é§ãƒ†ãƒ¼ãƒ–ãƒ«ãŒã‚ªãƒ¼ãƒãƒ¼ã—ã¾ã—ãŸ.\n");
                     exit(1);
                 }
 ifopt('t') {
@@ -1023,7 +1022,7 @@ ifopt('t') {
         }
 }
 
-int		get_nrtnam(val)
+int		get_nrtnam(int val)
 {
         int i;
         for(i=0;i<nrtmax;i++) {
@@ -1032,7 +1031,7 @@ int		get_nrtnam(val)
         return -1;
 }
 
-void	print_nrtname(entnum,seg,off)
+void	print_nrtname(int entnum,int seg,int off)
 {
         int i;
         i=get_nrtnam(entnum);
@@ -1049,7 +1048,7 @@ void	print_nrtname(entnum,seg,off)
  *  
  **********************************************************************
  */
-void	insert_label()
+void	insert_label(void)
 {
         int i;
         for(i=0;i<nrtmax;i++) {
@@ -1057,7 +1056,7 @@ void	insert_label()
         }
 }
 
-void	insert_fixup()
+void	insert_fixup(void)
 {
         int i;
         REL *r;
@@ -1068,8 +1067,7 @@ void	insert_fixup()
         }
 }
 
-void	putrel(s,ip)
-char *s;
+void	putrel(char *s,int ip)
 {
         int i;
         REL *r;
@@ -1095,11 +1093,11 @@ char *s;
 }
 
 /**********************************************************************
-        ŠeƒZƒOƒƒ“ƒgƒf[ƒ^‚ÌŒã‚ë‚É•t‰Á‚³‚ê‚éƒŠƒƒP[ƒVƒ‡ƒ“î•ñ
+        å„ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã®å¾Œã‚ã«ä»˜åŠ ã•ã‚Œã‚‹ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±
                            PER SEGMENT DATA
 
-        Å‰‚É dw ƒŠƒƒP[ƒVƒ‡ƒ“ƒe[ƒuƒ‹ŒÂ”   ‚ª—ˆ‚éB
-        ‚»‚ÌŒã‚ë‚ÉˆÈ‰º‚Ì‚WƒoƒCƒg‚ªAŒÂ”•ª‘±‚­B
+        æœ€åˆã« dw ãƒªãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ†ãƒ¼ãƒ–ãƒ«å€‹æ•°   ãŒæ¥ã‚‹ã€‚
+        ãã®å¾Œã‚ã«ä»¥ä¸‹ã®ï¼˜ãƒã‚¤ãƒˆãŒã€å€‹æ•°åˆ†ç¶šãã€‚
  **********************************************************************
 +00     DB  Source type.
             0Fh = SOURCE_MASK
@@ -1109,16 +1107,16 @@ char *s;
             05h = OFFSET (16-bit offset)
 
 +01     DB  Flags byte.
-            03h = TARGET_MASK     Flag byte‚Ì‰ºˆÊ‚Qƒrƒbƒg‚Åí—Ş‚ªŒˆ‚Ü‚éB
-            00h = INTERNALREF           00 “à•”QÆ
-            01h = IMPORTORDINAL     01 ‚c‚k‚kQÆ.ƒGƒ“ƒgƒŠ[˜”‚Åw’è
-            02h = IMPORTNAME        10 ‚c‚k‚kQÆ.ƒGƒ“ƒgƒŠ[–¼‚Åw’è
-            03h = OSFIXUP           11 •‚“®¬”“_‰‰Z‚Ì–½—ß‚ğfixup‚·‚éB
-            04h = ADDITIVE        ‰ÁZî•ñ‚ª—L‚é‚±‚Æ‚ğ¦‚·B
+            03h = TARGET_MASK     Flag byteã®ä¸‹ä½ï¼’ãƒ“ãƒƒãƒˆã§ç¨®é¡ãŒæ±ºã¾ã‚‹ã€‚
+            00h = INTERNALREF           00 å†…éƒ¨å‚ç…§
+            01h = IMPORTORDINAL     01 ï¼¤ï¼¬ï¼¬å‚ç…§.ã‚¨ãƒ³ãƒˆãƒªãƒ¼åºæ•°ã§æŒ‡å®š
+            02h = IMPORTNAME        10 ï¼¤ï¼¬ï¼¬å‚ç…§.ã‚¨ãƒ³ãƒˆãƒªãƒ¼åã§æŒ‡å®š
+            03h = OSFIXUP           11 æµ®å‹•å°æ•°ç‚¹æ¼”ç®—ã®å‘½ä»¤ã‚’fixupã™ã‚‹ã€‚
+            04h = ADDITIVE        åŠ ç®—æƒ…å ±ãŒæœ‰ã‚‹ã“ã¨ã‚’ç¤ºã™ã€‚
 
 +02     DW  Offset within this segment of the source chain.
 
-        type:   ˆÈ‰º‚Ì‚S’Ê‚è
+        type:   ä»¥ä¸‹ã®ï¼”é€šã‚Š
 -----------------------------------------------------------------------
         INTERNALREF
 +04         DB  Segment number for a fixed segment, or 0FFh for a

@@ -2,24 +2,15 @@
 #include  <stdlib.h>
 #include  <malloc.h>
 #include  <string.h>
-#include  <ctype.h>
 #include  <time.h>
-#define SPOOLSIZE   0xff00L/* 文字列バッファ */
-
-
-#ifdef	__LARGE__
-#include  <process.h>		/* exit() */
-#endif
-
-#ifdef	FLAT
-#include  <process.h>		/* exit() */
-#endif
+#define   SPOOLSIZE   0xff00L/* 文字列バッファ */
+//#include  <process.h>		/* exit() */
 
 /***  プロトタイプ宣言　***/
 void  spool_init(void);
 char *xstrdup(char *s);
 char *xstrpdup(char *s);
-char *xmalloc(int size);
+char *xmalloc(long size);
 void  get_new_heap(void);
 char *timedate_string(time_t lstamp);
 char *dump_hex16(unsigned char *data,int mode);
@@ -68,8 +59,6 @@ char *xstrdup(char *s)
 {
         char *p;
 
-/*      printf("xstrdup(%s)=%lx",s,splp);
- */
         strcpy(splp,s);
         p=splp;
         splp+=strlen(p)+1;
@@ -102,36 +91,22 @@ char *xstrpdup(char *s)
  *  xmalloc(size)  （エラーチェック付の farmalloc ）
  **********************************************************************
  */
-char *xmalloc(int size)
+char *xmalloc(long size)
 {
         char *p;
-#ifdef	__LARGE__
-        p=farmalloc(size);if(p==NULL) {
-                printf("メモリー確保に失敗しました.\n");
-                exit(1);
-        }
-#else
         p=malloc(size);if(p==NULL) {
                 printf("メモリー確保に失敗しました.\n");
                 exit(1);
         }
-#endif
         return p;
 }
 
 void	get_new_heap()
 {
-#ifdef	__LARGE__
-        spool=farmalloc(SPOOLSIZE);if(spool==NULL) {
-                printf("文字列バッファがオーバーしました.\n");
-                exit(1);
-        }
-#else
         spool=malloc(SPOOLSIZE);if(spool==NULL) {
                 printf("文字列バッファがオーバーしました.\n");
                 exit(1);
         }
-#endif
         splp=spool;
 }
 
@@ -161,7 +136,7 @@ char *dump_hex16(unsigned char *data,int mode)
 	static	int	sjis1=0;
 	int i,c;
 	char *p;
-	unsigned int *l;
+	unsigned int  *l;
 	unsigned char *b;
 
 	p = buf;

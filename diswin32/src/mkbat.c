@@ -15,7 +15,7 @@ char	*script[MAXSCR];
 int		maxscript=0;
 extern	char   *spool;                  /* •¶š—ñƒv[ƒ‹—Ìˆæ     */
 char *xstrdup(char *s);
-char *xmalloc(long size);
+char *xmalloc(int size);
 char	buf[256];
 char	body[256];
 

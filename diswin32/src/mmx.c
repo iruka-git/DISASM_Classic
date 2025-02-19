@@ -173,6 +173,9 @@ char *mmxd0_ff[48]={
 	""					/* 0F FF */
 };
 
+void	modrm(char *s,int opc,int mod_rm,int ptrtype);
+
+
 void	mne(char *s);
 void	immb(void);
 void	modrmov(char *s1,char *s2,int opc);
@@ -312,13 +315,13 @@ CODESTR amdcode[]={
 	{-1  ,"???"}
 };
 
-void	AMD3dnow()
+void	AMD3dnow(void)
 {
-	extern	char    *op;    /* ���݂̉�͈ʒu���w���Ă���|�C���^ */
+	extern	char    *op;    /* 現在の解析位置を指しているポインタ */
 	CODESTR *t=amdcode;
 	int opc;
 
-//	mne("3dnow!");	/���̃j�[���j�b�N!
+//	mne("3dnow!");	/仮のニーモニック!
 
 	modrmovmmm(op1buf,op2buf,MM,MM);
 	

@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-typedef unsigned long bfd_vma;
+typedef unsigned int bfd_vma;
 typedef	int	boolean;
 typedef unsigned char bfd_byte;
 bfd_vma	bfd_getb32	   PARAMS ((const unsigned char *));
@@ -62,7 +62,7 @@ typedef struct disassemble_info {
 //  enum arch;
 //  enum bfd_architecture arch;
   /* The bfd_mach value.  */
-  unsigned long mach;
+  unsigned int mach;
 
   /* Endianness (for bi-endian cpus).  Mono-endian cpus can ignore this.  */
 //  enum endian;
@@ -71,7 +71,7 @@ typedef struct disassemble_info {
   /* For use by the disassembler.
      The top 16 bits are reserved for public use (and are documented here).
      The bottom 16 bits are for the internal use of the disassembler.  */
-  unsigned long flags;
+  unsigned int flags;
   PTR private_data;
 
   /* Function used to get bytes to disassemble.  MEMADDR is the

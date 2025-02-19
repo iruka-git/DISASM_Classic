@@ -1,8 +1,8 @@
 /**********************************************************************
- *  ƒAƒhƒŒƒXƒnƒbƒVƒ…‚ÌŠÇ—
+ *  ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒãƒƒã‚·ãƒ¥ã®ç®¡ç†
  **********************************************************************
- *	POOL1 ‚ÍŠeƒZƒOƒƒ“ƒg–ˆ‚Ì FIXUPƒAƒhƒŒƒX‚ğ•Û
- *	POOL2 ‚ÍAPI DATABASEî•ñ‚ğƒnƒbƒVƒ…
+ *	POOL1 ã¯å„ã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ¯ã® FIXUPã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ä¿æŒ
+ *	POOL2 ã¯API DATABASEæƒ…å ±ã‚’ãƒãƒƒã‚·ãƒ¥
  */
 #include <stdio.h>
 #include "diswin.h"
@@ -10,13 +10,13 @@
 typedef struct HASH {
     struct HASH *next;
     char        *obj;
-    long         val;
+    int         val;
     int          flg;
 } HASH;
 
 #define HASHSIZE   0x4000
-#define POOL1SIZE  0x8000L	/* ŠeƒZƒOƒƒ“ƒg–ˆ‚Ì FIXUPƒAƒhƒŒƒX‚ğƒnƒbƒVƒ…*/
-#define POOL2SIZE  0x40000L	/* API DATABASEî•ñ‚ğƒnƒbƒVƒ… */
+#define POOL1SIZE  0x8000L	/* å„ã‚»ã‚°ãƒ¡ãƒ³ãƒˆæ¯ã® FIXUPã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ãƒãƒƒã‚·ãƒ¥*/
+#define POOL2SIZE  0x40000L	/* API DATABASEæƒ…å ±ã‚’ãƒãƒƒã‚·ãƒ¥ */
 #define HS	sizeof(HASH)
 static  HASH    *entry[HASHSIZE];
 static  HASH    *entry2[HASHSIZE];
@@ -26,12 +26,12 @@ static  HASH    *hp;
 static  HASH    *hp2;
 
 
-char   *xmalloc(long size);
+char   *xmalloc(int size);
 void	clr_hash(void);
 void	clr_hash2(void);
 
 /**********************************************************************
- *  ƒAƒhƒŒƒXƒnƒbƒVƒ…‚Ì‰Šú‰»iÅ‰‚Ì‚P‰ñ‚¾‚¯j
+ *  ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒãƒƒã‚·ãƒ¥ã®åˆæœŸåŒ–ï¼ˆæœ€åˆã®ï¼‘å›ã ã‘ï¼‰
  **********************************************************************
  */
 void	init_hash(void)
@@ -43,7 +43,7 @@ void	init_hash(void)
 }
 
 /**********************************************************************
- *  ƒAƒhƒŒƒXƒnƒbƒVƒ…‚Ì‰Šú‰»iƒNƒŠƒAj
+ *  ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒãƒƒã‚·ãƒ¥ã®åˆæœŸåŒ–ï¼ˆã‚¯ãƒªã‚¢ï¼‰
  **********************************************************************
  */
 void	clr_hash(void)
@@ -66,16 +66,16 @@ void	hash_report(void)
  printf("hash pool(2) used = 0x%x/0x%lx \n",(int)(hp2-pool2)*HS,POOL2SIZE);
 }
 
-static	int	calc_hash(long	val)
+static	int	calc_hash(int	val)
 {
     return val & (HASHSIZE-1);
 }
 
 /**********************************************************************
- *  ‘}“ü
+ *  æŒ¿å…¥
  **********************************************************************
  */
-void	insert_hash(long val,int flg,char *obj)
+void	insert_hash(int val,int flg,char *obj)
 {
     int   hval;
 
@@ -89,7 +89,7 @@ void	insert_hash(long val,int flg,char *obj)
     hp++;
 }
 
-void	insert_hash2(long val,int flg,char *obj)
+void	insert_hash2(int val,int flg,char *obj)
 {
     int   hval;
 
@@ -104,10 +104,10 @@ void	insert_hash2(long val,int flg,char *obj)
 }
 
 /**********************************************************************
- *  ŒŸõ
+ *  æ¤œç´¢
  **********************************************************************
  */
-char *search_hash(long val,int flg)
+char *search_hash(int val,int flg)
 {
     int hval;
     HASH *h;
@@ -123,7 +123,7 @@ char *search_hash(long val,int flg)
     return NULL;
 }
 
-char *search_hash2(long val,int flg)
+char *search_hash2(int val,int flg)
 {
     int hval;
     HASH *h;
@@ -140,16 +140,16 @@ char *search_hash2(long val,int flg)
 }
 
 /**********************************************************************
- *  ‚o‚d ‚‚‚„‚…
+ *  ï¼°ï¼¥ ï½ï½ï½„ï½…
  **********************************************************************
  */
 #if	0
-char *search_hash2_long(long l)
+char *search_hash2_int(int l)
 {
 	return search_hash2(l,0);
 }
 
-void  insert_hash2_long(long l,char *obj)
+void  insert_hash2_int(int l,char *obj)
 {
 	insert_hash2(l,0,obj);
 }

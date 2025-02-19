@@ -18,12 +18,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
+#include <string.h>
+
 #include "ansidecl.h"
 /*#include "sysdep.h"*/
 
 #include "dis-asm.h"
 
 #include "mips.h"
+
+#include "risc.h"
 
 /* Mips instructions are never longer than this many bytes.  */
 #define MAXLEN 4
@@ -60,7 +64,7 @@ static char *reg_names_2[] =
 
 static char **reg_names=reg_names_1;
 
-set_alternate_regname()
+void set_alternate_regname()
 {
 	reg_names=reg_names_2;
 }
@@ -81,10 +85,14 @@ char	hexpri[16]="-$%lx";
 #define	HEXPRI4	(&hexpri[1])
 #define	MHXPRI4	(&hexpri[0])
 
-extern	set_ea(char *buf,long addr);
+extern	void set_ea(char *buf,long addr);
 
 
-set_alternate_hexa()
+
+
+
+
+void set_alternate_hexa()
 {
 	strcpy(hexpri,"-0x%lx");
 }
@@ -92,14 +100,10 @@ set_alternate_hexa()
 
 
 //
-//	ƒIƒyƒ‰ƒ“ƒh‚Ì‰ğÍ•\¦
+//	ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®è§£æè¡¨ç¤º
 //
 /* subroutine */
-static void	print_insn_arg (d, l, pc, info)
-     const char *d;
-     register unsigned long int l;
-     bfd_vma pc;
-     struct disassemble_info *info;
+static void	print_insn_arg (const char *d,unsigned long l,bfd_vma pc,struct disassemble_info *info)
 {
   long int delta;
 
@@ -269,23 +273,23 @@ static	int		srcreg;
 static	int		dstreg;
 static	int		setreg;
 
-is_crlf()
+int crlf_for_mips(void)
 {
 	return (dline!=0);
 }
 
 //
-//	ƒj[ƒ‚ƒjƒbƒN‚ª jal ‚Ån‚Ü‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©’²‚×‚é.
+//	ãƒ‹ãƒ¼ãƒ¢ãƒ‹ãƒƒã‚¯ãŒ jal ã§å§‹ã¾ã£ã¦ã„ã‚‹ã‹ã©ã†ã‹èª¿ã¹ã‚‹.
 //
-is_jal(char *s)
+int is_jal(const char *s)
 {
 	return ( (s[0]=='j') && (s[1]=='a') && (s[2]=='l') );
 }
 
 //
-//	lui–½—ß‚Ì’¼Œã‚Ì ƒ[ƒh–½—ß‚ÉƒRƒƒ“ƒg‚ğU‚éˆ—.
+//	luiå‘½ä»¤ã®ç›´å¾Œã® ãƒ­ãƒ¼ãƒ‰å‘½ä»¤ã«ã‚³ãƒ¡ãƒ³ãƒˆã‚’æŒ¯ã‚‹å‡¦ç†.
 //
-set_remark(struct mips_opcode *op)
+void set_remark(const struct mips_opcode *op)
 {
 	short	offset;
 	long    eaddr;
@@ -296,14 +300,14 @@ set_remark(struct mips_opcode *op)
 	setreg = (prevword >>16L) & 31;
 	currcode=(currword >>24L) & 0xfc;
 
-	if( ( prevword & 0xffe00000L )==0x3c000000 ) {		// lui‚È‚ç‚ÎA
-		if(setreg == srcreg) {	//’¼‘O‚ÉƒZƒbƒg‚µ‚½ƒŒƒWƒXƒ^‚ğQÆ‚µ‚Ä‚¢‚éA
+	if( ( prevword & 0xffe00000L )==0x3c000000 ) {		// luiãªã‚‰ã°ã€
+		if(setreg == srcreg) {	//ç›´å‰ã«ã‚»ãƒƒãƒˆã—ãŸãƒ¬ã‚¸ã‚¹ã‚¿ã‚’å‚ç…§ã—ã¦ã„ã‚‹ã€
 			switch(currcode) {
-			 case 0x34:	// ori‚È‚ç‚ÎA
+			 case 0x34:	// oriãªã‚‰ã°ã€
 				eaddr = (prevword<<16L) | (currword & 0xffff);set_ea(ea,eaddr);
 				pr_rem("; %s = %s",reg_names[dstreg], ea );
 				break;
-			 case 0x24:	// addiu‚È‚ç‚ÎA
+			 case 0x24:	// addiuãªã‚‰ã°ã€
 				offset = currword;
 				eaddr  = (prevword<<16L) + offset;set_ea(ea,eaddr);
 				pr_rem("; %s = %s",reg_names[dstreg], ea );
@@ -331,7 +335,7 @@ set_remark(struct mips_opcode *op)
 	}
 }
 //
-//	ƒj[ƒ‚ƒjƒbƒN‚Ì•\¦
+//	ãƒ‹ãƒ¼ãƒ¢ãƒ‹ãƒƒã‚¯ã®è¡¨ç¤º
 //
 static int	_print_insn_mips (memaddr, word, info)
      bfd_vma memaddr;
@@ -383,7 +387,7 @@ static int	_print_insn_mips (memaddr, word, info)
 			if(dslot) {dmark=" -s- ";}
 			else      {dmark="     ";}
 
-			dline = (dslot & INSN_UNCOND_BRANCH_DELAY);			//‰üs‚ğ‘}“ü‚·‚é‚©‚Ç‚¤‚©?
+			dline = (dslot & INSN_UNCOND_BRANCH_DELAY);			//æ”¹è¡Œã‚’æŒ¿å…¥ã™ã‚‹ã‹ã©ã†ã‹?
 			
 			{
 				dslot = (op->pinfo & (INSN_UNCOND_BRANCH_DELAY|INSN_COND_BRANCH_DELAY) ) ;
@@ -392,9 +396,9 @@ static int	_print_insn_mips (memaddr, word, info)
 				prevword = word;
 			}
 
-	      (*info->fprintf_func) (info->stream, "%s", dmark);	//ƒfƒBƒŒƒCƒXƒƒbƒg	-s-
+	      (*info->fprintf_func) (info->stream, "%s", dmark);	//ãƒ‡ã‚£ãƒ¬ã‚¤ã‚¹ãƒ­ãƒƒãƒˆ	-s-
 	      
-	      (*info->fprintf_func) (info->stream, "%s", op->name);	//ƒjƒ‚ƒjƒbƒN‚ğo—Í‚·‚é.
+	      (*info->fprintf_func) (info->stream, "%s", op->name);	//ãƒ‹ãƒ¢ãƒ‹ãƒƒã‚¯ã‚’å‡ºåŠ›ã™ã‚‹.
 
 	      d = op->args;
 	      if (d != NULL)
@@ -402,7 +406,7 @@ static int	_print_insn_mips (memaddr, word, info)
 			if( *d != 0 )
 			{int i;
 				for(i=strlen(op->name);i<8;i++)
-		  			(*info->fprintf_func) (info->stream, " ");	//ƒjƒ‚ƒjƒbƒN‚ÌŒã‚ë‚É‹ó”’‚ğ“ü‚ê‚é.
+		  			(*info->fprintf_func) (info->stream, " ");	//ãƒ‹ãƒ¢ãƒ‹ãƒƒã‚¯ã®å¾Œã‚ã«ç©ºç™½ã‚’å…¥ã‚Œã‚‹.
 			}
 
 		  for (; *d != '\0'; d++)
@@ -436,12 +440,11 @@ int	print_insn_big_mips (memaddr, info)
     }
 }
 
-int	print_insn_little_mips (memaddr, info)
-     bfd_vma memaddr;
-     struct disassemble_info *info;
+int	print_insn_little_mips(bfd_vma memaddr,struct disassemble_info *info)
 {
   bfd_byte buffer[4];
-  int status = (*info->read_memory_func) (memaddr, buffer, 4, info);
+  int status = 	(*info->read_memory_func)  (memaddr, buffer, 4, info);
+  				(*info->print_memory_func) (memaddr, buffer, 4, info);
   if (status == 0)
     return _print_insn_mips (memaddr, (unsigned long) bfd_getl32 (buffer), info);
   else
@@ -450,3 +453,4 @@ int	print_insn_little_mips (memaddr, info)
       return -1;
     }
 }
+

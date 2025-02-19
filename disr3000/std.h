@@ -2,11 +2,9 @@
  *	Ｃ言語　簡略ヘッダー  Borland-C version. rev.2
  *********************************************************
  */
-#include  <stdio.h>
-#include  <stdlib.h>
-#include  <string.h>
-#include  <malloc.h>
-#include  <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 /*
  *	符号なしの型名の省略形
  *	typedefの場合は配列を切るときにワードアライメントされるので
@@ -138,7 +136,7 @@ int getln(char *buf,FILE *fp)
 		*buf++ = c;l++;
 		if(l>=255) {
 			*buf = 0;
-			return(1);	/* Too int line */
+			return(1);	/* Too long line */
 		}
 	}
 }

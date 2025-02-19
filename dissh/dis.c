@@ -1,12 +1,11 @@
 /********************************************************/
-/*		‹tƒAƒZƒ“ƒuƒ‹•\¦								*/
+/*		é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«è¡¨ç¤º								*/
 /********************************************************/
 
 #include <stdio.h>
-#include <dos.h>
 #include <string.h>
 #include <ctype.h>
-#include <dir.h>
+
 #include "sh7000.h"
 #include "symbol.h"
 
@@ -38,7 +37,7 @@ static	int		optype;
 extern	Ulong	gbr;
 
 
-/***  ƒvƒƒgƒ^ƒCƒvéŒ¾@***/
+/***  ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€ã€€***/
 void disasm(Ulong start,Ulong length);
 int disasm_1L(long ip);
 void disout(void);
@@ -53,7 +52,7 @@ void remout_imm4(long adr);
 void remout_imm40w(long adr);
 void remout_imm20w(long adr);
 void remout_imm2(long adr);
-void put_label(unsigned long c,int tabs);
+void put_label(unsigned int c,int tabs);
 int  sprint_adrs(char *p,char *q,long rela);
 void cutopr(void);
 int  regnum(char *s);
@@ -68,22 +67,22 @@ extern	int	 dis_peekw(long	adrs);
 extern	long dis_peekl(long adrs);
 
 /*
- *	‹tƒAƒZƒ“ƒuƒ‹•\¦
+ *	é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«è¡¨ç¤º
  */
 void disasm(Ulong start,Ulong length)
 {
 	Ulong adrs;
 	for(adrs=start;adrs< (start+length) ; adrs+=2) {
-		disasm_1L(adrs);		/** ‹tƒAƒZƒ“ƒuƒ‹ **/
+		disasm_1L(adrs);		/** é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ« **/
 	}
 }
 
 /*
  *
- *	‹tƒAƒZƒ“ƒuƒ‹•\¦@‚Ps•ª
+ *	é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«è¡¨ç¤ºã€€ï¼‘è¡Œåˆ†
  *
- *		ŠJnƒAƒhƒŒƒX ip  (ƒ^[ƒQƒbƒg‘¤‚Ì˜_—ƒAƒhƒŒƒX)
- *		–ß‚è’lF   –½—ßƒTƒCƒY
+ *		é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼ ip  (ã‚¿ãƒ¼ã‚²ãƒƒãƒˆå´ã®è«–ç†ã‚¢ãƒ‰ãƒ¬ã‚¹)
+ *		æˆ»ã‚Šå€¤ï¼š   å‘½ä»¤ã‚µã‚¤ã‚º
  *
  */
 int	disasm_1L(long ip)
@@ -98,12 +97,12 @@ int	disasm_1L(long ip)
 
 	dp=disbuf;
 	{
-		put_label(ip,13);			/* ƒ‰ƒxƒ‹‚ğƒVƒ“ƒ{ƒ‹‚Å•\¦F */
+		put_label(ip,13);			/* ãƒ©ãƒ™ãƒ«ã‚’ã‚·ãƒ³ãƒœãƒ«ã§è¡¨ç¤ºï¼š */
 		dp=disbuf;
 	}
 
 	mne=dis_peekw(ip);
-	if( opdelay[opcode]=='s') slotmark="-s-";	/*‚P‚Â‘O‚ÌOPCODE‚¾‚Æv‚¤*/
+	if( opdelay[opcode]=='s') slotmark="-s-";	/*ï¼‘ã¤å‰ã®OPCODEã ã¨æ€ã†*/
 	else	slotmark="   ";
 	markf = get_mark(ip,ip);
 
@@ -141,8 +140,8 @@ int	disasm_1L(long ip)
 			break;
 	}
 	
-	op_name = opstring[ opcode ];			/*ƒjƒ‚ƒjƒbƒN*/
-	disputs(op_name);					/*ƒjƒ‚ƒjƒbƒN*/
+	op_name = opstring[ opcode ];			/*ãƒ‹ãƒ¢ãƒ‹ãƒƒã‚¯*/
+	disputs(op_name);					/*ãƒ‹ãƒ¢ãƒ‹ãƒƒã‚¯*/
 
 	for(i=strlen(op_name);i<8;i++) disputc(' ');
 
@@ -163,29 +162,29 @@ int	disasm_1L(long ip)
 			break;
 		case NOMARK:
 		default:
-			disoperand(mne,ip);				/*ƒIƒyƒ‰ƒ“ƒh*/
+			disoperand(mne,ip);				/*ã‚ªãƒšãƒ©ãƒ³ãƒ‰*/
 			break;
 	}
 
-	cutopr();					/* ‰ğÍÏƒIƒyƒ‰ƒ“ƒh‚ğ‚Q‚Â‚É•ªŠ„‚µopsrc,opdst‚É“ü‚ê‚é */
-	setdst();					/* ƒŒƒWƒXƒ^’l‚ÌŠÇ— */
+	cutopr();					/* è§£ææ¸ˆã‚ªãƒšãƒ©ãƒ³ãƒ‰ã‚’ï¼’ã¤ã«åˆ†å‰²ã—opsrc,opdstã«å…¥ã‚Œã‚‹ */
+	setdst();					/* ãƒ¬ã‚¸ã‚¹ã‚¿å€¤ã®ç®¡ç† */
 	
 	remarks(rembuf);
-	if(markf!=DD2)				/* long operand‚Ì‚Qƒ[ƒh–Ú‚ÍÈ—ª‚·‚é */
+	if(markf!=DD2)				/* long operandã®ï¼’ãƒ¯ãƒ¼ãƒ‰ç›®ã¯çœç•¥ã™ã‚‹ */
 		disout();
-	if(crlff) {dis_putln("");}	/* RTS RTE JMP ‚ÌŒã‚ë‚É‹ós‚ğ“ü‚ê‚é */
+	if(crlff) {dis_putln("");}	/* RTS RTE JMP ã®å¾Œã‚ã«ç©ºè¡Œã‚’å…¥ã‚Œã‚‹ */
 	clrjmps();
 	set_mark(ip,ip,NOMARK);
 	return 2;	/* opsize(mne);*/
 }
 
 /*
- *	‹tƒAƒZƒ“ƒuƒ‰ê—po—Íƒ‹[ƒ`ƒ“
+ *	é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ©å°‚ç”¨å‡ºåŠ›ãƒ«ãƒ¼ãƒãƒ³
  *
  */
-void disout()
+void disout(void)
 {
-	char outbuf[128];
+	char outbuf[1024];
 	*dp=0;dp=disbuf;
 
 	if(rflag==0) rembuf[0]=0;
@@ -198,12 +197,11 @@ void disout()
 	dis_putln(outbuf);
 }
 
-void disputc(c)
+void disputc(int c)
 {
 	*dp++ = c;
 }
-void disputs(s)
-char *s;
+void disputs(char *s)
 {
 	while(*s) {
 		*dp++ = *s++;
@@ -213,13 +211,13 @@ char *s;
 
 /*---------------------------------------------------------------------------*/
 
-void clrjmp(s,e)
+void clrjmp(int s,int e)
 {
 	int i;
 	for(i=s;i<e;i++) jmpdst[i][0]=0;
 }
 
-void clrjmps()
+void clrjmps(void)
 {
 	switch(opcode) {
 		case JMP:
@@ -256,8 +254,8 @@ char *symbol_check(long val)
 	static	SYMBOL s;
 	static	char ss[80];
 	
-	if(find_symbol_by_adrs(&s,val)) {	/* ŒŸõ¬Œ÷ */
-		_fstrcpy(ss,s.name);
+	if(find_symbol_by_adrs(&s,val)) {	/* æ¤œç´¢æˆåŠŸ */
+		strcpy(ss,s.name);
 		return ss;
 	}
 	return(NULL);
@@ -265,7 +263,7 @@ char *symbol_check(long val)
 
 
 /*
- *	ƒIƒyƒ‰ƒ“ƒh‚Ì‰ğß(–½—ßƒR[ƒhAƒIƒyƒ‰ƒ“ƒh‚ÌƒoƒCƒg—ñAƒJƒŒƒ“ƒg‚o‚b)
+ *	ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®è§£é‡ˆ(å‘½ä»¤ã‚³ãƒ¼ãƒ‰ã€ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®ãƒã‚¤ãƒˆåˆ—ã€ã‚«ãƒ¬ãƒ³ãƒˆï¼°ï¼£)
  */
 
 long extsign8(int i)
@@ -276,15 +274,14 @@ long extsign8(int i)
 	return l;
 }
 
-void disoperand(mnem,adr)
-long	adr;
+void disoperand(int mnem,long	adr)
 {
 	char *fmt,*p;
 	int  c;
 	char *gbrsym;
-	long  branch12;
-	long  branch8;
-	long  rela,l;
+	int  branch12;
+	int  branch8;
+	int  rela,l;
 
 
 	fmt = operands[ optype ];
@@ -321,18 +318,18 @@ long	adr;
 				case '4':
 					rela = mnem & 0xffL; rela *= 4; rela +=(adr & (-4L) )+4;
 					if(opcode == MOVA) {
-						/* mov address ‚Ì‚Æ‚«‚Íƒf[ƒ^‚ÍQÆ‚µ‚È‚¢. */
+						/* mov address ã®ã¨ãã¯ãƒ‡ãƒ¼ã‚¿ã¯å‚ç…§ã—ãªã„. */
 						p += sprint_adrs(p,"",rela);
 					}else{
-					  if(iflag) {	/* 4byte‚Ì‘¦’l‚Æ‚µ‚Ä•]‰¿‚·‚é */
+					  if(iflag) {	/* 4byteã®å³å€¤ã¨ã—ã¦è©•ä¾¡ã™ã‚‹ */
 						l=dis_peekl(rela);
 						p += sprint_adrs(p,"#",l);
 						remout_imm40w(l);
-					  }else{		/* ‘¦’l‚Ì“ü‚Á‚Ä‚¢‚éƒAƒhƒŒƒX‚ğ•\¦‚·‚é */
+					  }else{		/* å³å€¤ã®å…¥ã£ã¦ã„ã‚‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ */
 						p += sprint_adrs(p,"",rela);
 						remout_imm4(rela);
 					  }
-					  /* QÆ‚³‚ê‚½ƒAƒhƒŒƒX‚É .long‚Ìˆó‚ğ•t‚¯‚Ä‚¨‚­  */
+					  /* å‚ç…§ã•ã‚ŒãŸã‚¢ãƒ‰ãƒ¬ã‚¹ã« .longã®å°ã‚’ä»˜ã‘ã¦ãŠã  */
 						set_mark(adr,rela  ,DD);
 						set_mark(adr,rela+2,DD2);
 					}
@@ -349,9 +346,9 @@ long	adr;
 				  }
 					set_mark(adr,rela,DW);
 				  	break;
-				case '1':	/* g‚Á‚Ä‚È‚¢‚Á‚Û‚¢ */
+				case '1':	/* ä½¿ã£ã¦ãªã„ã£ã½ã„ */
 					rela = mnem & 0xffL; rela *= 1; rela +=(adr+4);
-					p += sprintf(p,"%08lx",rela);break;
+					p += sprintf(p,"%08x",rela);break;
 				case 'i':
 					p += sprintf(p, "%ld",extsign8(imm));break;
 				case 'g':	/* GBR base offset */
@@ -420,17 +417,18 @@ void remout_imm2(long adr)
 	sprintf(rembuf," = 0x%04lx (%5ld)",l,l);
 }
 
-void put_label(c,tabs)
-unsigned long c;
+void put_label(unsigned int c,int tabs)
 {
 	unsigned int	bank,ofs;
 	int		f,i;
 	SYMBOL 		syment;
 	static char	ss[80]="";
+
+//	printf("put_label(%x)\n",c);
 	
-	if( find_symbol_by_adrs( &syment,c ) )
-	{
-		_fstrcpy(ss , syment.name);
+	if( find_symbol_by_adrs( &syment,c ) ){
+//		printf("put_label(%x) HIT\n",c);
+		strcpy(ss , syment.name);
 		dp=disbuf;
 		for(i=0;i<tabs;i++) disputs(" ");
 		disputs(ss);
@@ -688,7 +686,7 @@ void remarks(char *buf)
 			t = " $t = center of [$s:$t]";break;
 	}
 
-/*	strcpy(buf,t);	‚Ì‘ã–ğ	*/
+/*	strcpy(buf,t);	ã®ä»£å½¹	*/
 	while(*t) {
 		if(*t=='$') {
 			t++;

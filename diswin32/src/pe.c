@@ -1,5 +1,5 @@
 /**********************************************************************
- *  ‚o‚dŒ`®‚Ìƒtƒ@ƒCƒ‹‚ğƒ_ƒ“ƒv‚·‚éB
+ *  ï¼°ï¼¥å½¢å¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹ã€‚
  **********************************************************************
  */
 #include  <stdio.h>
@@ -9,28 +9,28 @@
 #include "pedump.h"
 
 
-/***  ƒvƒƒgƒ^ƒCƒvéŒ¾@***/
+/***  ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€ã€€***/
 void	pe_dump(void);
-void	dump_out(FILE *fp,unsigned char *buf,long cutsize,long start);
-void	code32_dump(int segnum,char *sectname,long off,long siz,long start,long size);
-void	data32_cut(int segnum,char *sectname,long off,long siz,long start,long size);
-void	data32_dump(int segnum,char *sectname,long off,long siz,long start,long size);
+void	dump_out(FILE *fp,unsigned char *buf,int cutsize,int start);
+void	code32_dump(int segnum,char *sectname,int off,int siz,int start,int size);
+void	data32_cut(int segnum,char *sectname,int off,int siz,int start,int size);
+void	data32_dump(int segnum,char *sectname,int off,int siz,int start,int size);
 void	section_dump(void);
-int		hint_dump(long rva,long size,long offset);
-int		imports_dump(long offset,long size,long vadrs);
-int		exports_dump(long offset,long size,long vadrs);
+int		hint_dump(int rva,int size,int offset);
+int		imports_dump(int offset,int size,int vadrs);
+int		exports_dump(int offset,int size,int vadrs);
 void	imp_exp_find(int f);
 
 void	set_cpumode(int op,int ad);
 
 
-void	insert_hash2(long val,int flg,char *str);
+void	insert_hash2(int val,int flg,char *str);
 char	*xstrdup(char *s);
 char	*ModuleName;
-char    *timedate_string(long lstamp);
+char    *timedate_string(int lstamp);
 
 extern	void	load_exemap(char *s);
-extern	char    mapname[];            /* “ü—Íƒtƒ@ƒCƒ‹–¼       */
+extern	char    mapname[];            /* å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«å       */
 
 #define Read(buf,siz)   fread (buf,1,siz,ifp)
 #define Rseek(ptr) fseek(ifp,ptr,0)
@@ -41,28 +41,28 @@ extern	char    mapname[];            /* “ü—Íƒtƒ@ƒCƒ‹–¼       */
 #define	ASMCUTS 0x8000L
 
 /**********************************************************************
- *  ‚d‚˜‚”‚…‚’‚‚‚Œ‚“
+ *  ï¼¥ï½˜ï½”ï½…ï½’ï½ï½ï½Œï½“
  **********************************************************************
  */
 extern  FILE  *ifp;
 extern  FILE  *ofp;
 extern	char  *vbuf;
-extern  char  *loadbuf;         /* ƒoƒCƒiƒŠ[‚ğƒ[ƒh‚·‚éƒoƒbƒtƒ@ */
-extern	char  *opt[128];	/* ƒIƒvƒVƒ‡ƒ“•¶š‚ªw’è‚³‚ê‚Ä‚¢‚½‚ç‚»‚Ì•¶š‚É*/
-			        /* ‘±‚­•¶š—ñ‚ğŠi”[Aw’è‚È‚¯‚ê‚ÎNULL	*/
+extern  char  *loadbuf;         /* ãƒã‚¤ãƒŠãƒªãƒ¼ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ */
+extern	char  *opt[128];	/* ã‚ªãƒ—ã‚·ãƒ§ãƒ³æ–‡å­—ãŒæŒ‡å®šã•ã‚Œã¦ã„ãŸã‚‰ãã®æ–‡å­—ã«*/
+			        /* ç¶šãæ–‡å­—åˆ—ã‚’æ ¼ç´ã€æŒ‡å®šãªã‘ã‚Œã°NULL	*/
 extern	char   srcname[];
 extern	char   binname[];
 extern	char   hexname[];
 extern	char   inpname[];
 extern	int	   quietmode;
-void NEseek(long);
-void loadbin(long off,long size);
-void gen_dummy_hdr(char *s,long l);
+void NEseek(int);
+void loadbin(int off,int size);
+void gen_dummy_hdr(char *s,int l);
 
-long disasm_i386(char *buf,long start,long size,FILE *ofp);
-long disasm_mips(char *buf,long start,long size,FILE *ofp);
-long disasm_arm(char *buf,long start,long size,FILE *ofp);
-long disasm_sh(char *buf,long start,long size,FILE *ofp);
+int disasm_i386(char *buf,int start,int size,FILE *ofp);
+int disasm_mips(char *buf,int start,int size,FILE *ofp);
+int disasm_arm(char *buf,int start,int size,FILE *ofp);
+int disasm_sh(char *buf,int start,int size,FILE *ofp);
 
 #define MACHINE_I860              0x14d   // Intel 860.
 #define MACHINE_I386              0x14c   // Intel 386.
@@ -74,11 +74,11 @@ long disasm_sh(char *buf,long start,long size,FILE *ofp);
 #define MACHINE_ARM	              0x1c0   // ARM
 
 /**********************************************************************
- *  ‚v‚‚’‚‹
+ *  ï¼·ï½ï½’ï½‹
  **********************************************************************
  */
-PE_HDR       pe;    /* PEŒ`®‚Ìƒwƒbƒ_[   */
-SECTION_HDR  sect;  /* ƒZƒNƒVƒ‡ƒ“ƒwƒbƒ_[ */
+PE_HDR       pe;    /* PEå½¢å¼ã®ãƒ˜ãƒƒãƒ€ãƒ¼   */
+SECTION_HDR  sect;  /* ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãƒ˜ãƒƒãƒ€ãƒ¼ */
 int			 dumpmode=0;
 
 char *machine_name(int magic)
@@ -105,17 +105,17 @@ char *machine_name(int magic)
 	}
 }
 /**********************************************************************
- *  Šeí@‹tƒAƒZƒ“ƒuƒ‰
+ *  å„ç¨®ã€€é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ©
  **********************************************************************
  */
 #ifdef	DOS16
-//	Turbo-C (DOS-generic)‚Å‚ÍARISCŠÖŒW‚ğƒŠƒ“ƒN‚µ‚È‚¢.
-long disasm(char *buf,long start,long size,FILE *ofp)
+//	Turbo-C (DOS-generic)ã§ã¯ã€RISCé–¢ä¿‚ã‚’ãƒªãƒ³ã‚¯ã—ãªã„.
+int disasm(char *buf,int start,int size,FILE *ofp)
 {
 		return disasm_i386(buf,start,size,ofp);
 }
 #else
-long disasm(char *buf,long start,long size,FILE *ofp)
+int disasm(char *buf,int start,int size,FILE *ofp)
 {
 	switch(pe.hdr.Machine) {
 	case MACHINE_R3000:
@@ -133,7 +133,7 @@ long disasm(char *buf,long start,long size,FILE *ofp)
 }
 #endif
 /**********************************************************************
- *  ‚o‚d@‚c‚t‚l‚oƒƒCƒ“
+ *  ï¼°ï¼¥ã€€ï¼¤ï¼µï¼­ï¼°ãƒ¡ã‚¤ãƒ³
  **********************************************************************
  */
 void	pe_dump()
@@ -169,10 +169,10 @@ void	pe_dump()
     
     if(IsOpt('l')) dumpmode=1;
 
-    load_exemap(mapname);/* *.MAPƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚ê‚Î‚»‚ê‚ğ“Ç‚İ‚Ş */
+    load_exemap(mapname);/* *.MAPãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚Œã°ãã‚Œã‚’èª­ã¿è¾¼ã‚€ */
     
     NEseek(0);
-    Read(&pe,sizeof(pe));	/* PEƒwƒbƒ_[\‘¢‚ğ“Ç‚İ‚Ş */
+    Read(&pe,sizeof(pe));	/* PEãƒ˜ãƒƒãƒ€ãƒ¼æ§‹é€ ã‚’èª­ã¿è¾¼ã‚€ */
     if(quietmode) {
     	if(quietmode!=16)
 	    	imp_exp_find(0);
@@ -201,32 +201,32 @@ void	pe_dump()
     printf("Subsystem               =0x%x (%s)\n" ,pe.opt.Subsystem,
     										subsys[pe.opt.Subsystem	& 7]);
 
-	//ƒf[ƒ^ƒfƒBƒŒƒNƒgƒŠ‚Ì‰ğÍ.
+	//ãƒ‡ãƒ¼ã‚¿ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®è§£æ.
     printf("DataDirectory[16]=\n");
 
     for(i=0;i<pe.opt.NumberOfRvaAndSizes;i++) {
         dir_namep=datadirname[i];
         if(pe.opt.DataDir[i].Size==0) dir_namep="";
 
-        printf("      adrs,size = %8lx,%8lx %s\n"
+        printf("      adrs,size = %8x,%8x %s\n"
             ,pe.opt.DataDir[i].VirtualAddress
             ,pe.opt.DataDir[i].Size
             ,dir_namep
         );
     }
 
-	imp_exp_find(1);	/* ƒCƒ“ƒ|[ƒgEƒe[ƒuƒ‹‚ğƒ_ƒ“ƒv‚·‚é */
-    section_dump();		/* ƒZƒNƒVƒ‡ƒ“Eƒwƒbƒ_[‚ğƒ_ƒ“ƒv‚·‚é */
+	imp_exp_find(1);	/* ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ»ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹ */
+    section_dump();		/* ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãƒ»ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹ */
 }
 
 
 
-void dump_out(FILE *fp,unsigned char *buf,long cutsize,long start)
+void dump_out(FILE *fp,unsigned char *buf,int cutsize,int start)
 {
 	char *dump_hex16(unsigned char *buf,int mode);
 	int x,c;
 	while(cutsize>0) {
-		fprintf(fp,"%08lx   %s" CRLF,start,dump_hex16(buf,dumpmode));
+		fprintf(fp,"%08x   %s" CRLF,start,dump_hex16(buf,dumpmode));
 		start   += 16;
 		buf     += 16;
 		cutsize -= 16;
@@ -234,14 +234,14 @@ void dump_out(FILE *fp,unsigned char *buf,long cutsize,long start)
 }
 
 /**********************************************************************
- *  ƒR[ƒhƒZƒNƒVƒ‡ƒ“‚È‚ç‹tƒAƒZƒ“ƒuƒ‰‚ğ‹N“®‚·‚é
+ *  ã‚³ãƒ¼ãƒ‰ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãªã‚‰é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ©ã‚’èµ·å‹•ã™ã‚‹
  **********************************************************************
  */
-void code32_dump(int segnum,char *sectname,long off,long siz,long start,long size)
+void code32_dump(int segnum,char *sectname,int off,int siz,int start,int size)
 {
     char asmname[64];	/* *.asm */
-    FILE *fp;		/* ƒtƒ@ƒCƒ‹ asmname ‚Ìƒnƒ“ƒhƒ‹ */
-    long cutsize,asmsize;
+    FILE *fp;		/* ãƒ•ã‚¡ã‚¤ãƒ« asmname ã®ãƒãƒ³ãƒ‰ãƒ« */
+    int cutsize,asmsize;
 
     sprintf(asmname,"%s%02d.asm",srcname,segnum);
     fp=fopen(asmname,"wb");
@@ -252,10 +252,10 @@ void code32_dump(int segnum,char *sectname,long off,long siz,long start,long siz
     }
     setvbuf(fp,vbuf,0,VBUFSIZE);
     fprintf(fp,"; ModuleName    : %s" CRLF,inpname);
-    fprintf(fp,"; entry Address :   %06lx" CRLF,pe.opt.AddressOfEntryPoint);
-    fprintf(fp,"; Base of code  :   %06lx" CRLF,pe.opt.BaseOfCode         );
-    fprintf(fp,"; Base of data  :   %06lx" CRLF,pe.opt.BaseOfData         );
-    fprintf(fp,"; ImageBase     : %08lx" CRLF,pe.opt.ImageBase          );
+    fprintf(fp,"; entry Address :   %06x" CRLF,pe.opt.AddressOfEntryPoint);
+    fprintf(fp,"; Base of code  :   %06x" CRLF,pe.opt.BaseOfCode         );
+    fprintf(fp,"; Base of data  :   %06x" CRLF,pe.opt.BaseOfData         );
+    fprintf(fp,"; ImageBase     : %08x" CRLF,pe.opt.ImageBase          );
     fprintf(fp,CRLF    );
     fprintf(fp,"                        %s" CRLF,sectname);
 
@@ -263,11 +263,11 @@ void code32_dump(int segnum,char *sectname,long off,long siz,long start,long siz
 	dislmips_init();
 #endif
 
-	if(siz>size) siz=size;	/* ƒo[ƒ`ƒƒƒ‹ƒTƒCƒY‚É‡‚í‚¹‚é */
-    /* 32kB ‚¸‚Â“Ç‚İ‚İ‚È‚ª‚ç‹tƒAƒZƒ“ƒuƒ‹‚·‚é */
+	if(siz>size) siz=size;	/* ãƒãƒ¼ãƒãƒ£ãƒ«ã‚µã‚¤ã‚ºã«åˆã‚ã›ã‚‹ */
+    /* 32kB ãšã¤èª­ã¿è¾¼ã¿ãªãŒã‚‰é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ã™ã‚‹ */
     while(siz>0) {
-        cutsize=siz;if(cutsize>=ASMCUTS) cutsize=ASMCUTS; /* 32k‚¸‚Â */
-        loadbin(off,cutsize+256);	/* 256byte —]•ª‚É“Ç‚İ‚Ş */
+        cutsize=siz;if(cutsize>=ASMCUTS) cutsize=ASMCUTS; /* 32kãšã¤ */
+        loadbin(off,cutsize+256);	/* 256byte ä½™åˆ†ã«èª­ã¿è¾¼ã‚€ */
         asmsize=disasm(loadbuf,start,cutsize,fp);
 /*	printf("disasm start %lx size %lx\n",start,cutsize);*/
         off  += asmsize;
@@ -278,17 +278,17 @@ void code32_dump(int segnum,char *sectname,long off,long siz,long start,long siz
 }
 
 /**********************************************************************
- *  ƒf[ƒ^ƒZƒNƒVƒ‡ƒ“‚ğƒJƒbƒgo—Í
+ *  ãƒ‡ãƒ¼ã‚¿ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ã‚«ãƒƒãƒˆå‡ºåŠ›
  **********************************************************************
  */
-void data32_cut(int segnum,char *sectname,long off,long siz,long start,long size)
+void data32_cut(int segnum,char *sectname,int off,int siz,int start,int size)
 {
     char asmname[64];	/* *.asm */
-    FILE *fp;		/* ƒtƒ@ƒCƒ‹ asmname ‚Ìƒnƒ“ƒhƒ‹ */
-    long cutsize,asmsize;
-    static long dummy;
-	dummy=size;			/* [‚¢ˆÓ–¡‚Í‚È‚¢ */
-	dummy=sectname[0];	/* [‚¢ˆÓ–¡‚Í‚È‚¢ */
+    FILE *fp;		/* ãƒ•ã‚¡ã‚¤ãƒ« asmname ã®ãƒãƒ³ãƒ‰ãƒ« */
+    int cutsize,asmsize;
+    static int dummy;
+	dummy=size;			/* æ·±ã„æ„å‘³ã¯ãªã„ */
+	dummy=sectname[0];	/* æ·±ã„æ„å‘³ã¯ãªã„ */
 	sprintf(asmname,"%s%02d.bin",binname,segnum);
 
     fp=fopen(asmname,"wb");
@@ -299,9 +299,9 @@ void data32_cut(int segnum,char *sectname,long off,long siz,long start,long size
     }
     setvbuf(fp,vbuf,0,VBUFSIZE);
 
-    /* 32kB ‚¸‚Â“Ç‚İ‚İ‚È‚ª‚ço—Í */
+    /* 32kB ãšã¤èª­ã¿è¾¼ã¿ãªãŒã‚‰å‡ºåŠ› */
     while(siz>0) {
-        cutsize=siz;if(cutsize>=ASMCUTS) cutsize=ASMCUTS; /* 32k‚¸‚Â */
+        cutsize=siz;if(cutsize>=ASMCUTS) cutsize=ASMCUTS; /* 32kãšã¤ */
         loadbin(off,cutsize);
 		fwrite(loadbuf,1,cutsize,fp);
         asmsize=cutsize;
@@ -314,19 +314,19 @@ void data32_cut(int segnum,char *sectname,long off,long siz,long start,long size
 
 
 
-void data32_dump(int segnum,char *sectname,long off,long siz,long start,long size)
+void data32_dump(int segnum,char *sectname,int off,int siz,int start,int size)
 {
     char asmname[64];	/* *.asm */
-    FILE *fp;		/* ƒtƒ@ƒCƒ‹ asmname ‚Ìƒnƒ“ƒhƒ‹ */
-    long cutsize,asmsize,i;
+    FILE *fp;		/* ãƒ•ã‚¡ã‚¤ãƒ« asmname ã®ãƒãƒ³ãƒ‰ãƒ« */
+    int cutsize,asmsize,i;
 
-    static long dummy;
-	dummy=size;			/* [‚¢ˆÓ–¡‚Í‚È‚¢ */
+    static int dummy;
+	dummy=size;			/* æ·±ã„æ„å‘³ã¯ãªã„ */
 	
 	strcpy(asmname,sectname);
 	asmname[5]=0;
 
-	if(!IsOpt('H')) {	// -H ‚ğw’è‚·‚é‚Æ‘SƒZƒNƒVƒ‡ƒ“‚ğHEX DUMP(ƒfƒoƒbƒOê—p)
+	if(!IsOpt('H')) {	// -H ã‚’æŒ‡å®šã™ã‚‹ã¨å…¨ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’HEX DUMP(ãƒ‡ãƒãƒƒã‚°å°‚ç”¨)
 		if( (stricmp(asmname,".data")!=0)&&
 		    (stricmp(asmname,"DATA") !=0) ) return;
 	}
@@ -340,9 +340,9 @@ void data32_dump(int segnum,char *sectname,long off,long siz,long start,long siz
     }
     setvbuf(fp,vbuf,0,VBUFSIZE);
 
-    /* 32kB ‚¸‚Â“Ç‚İ‚İ‚È‚ª‚ço—Í */
+    /* 32kB ãšã¤èª­ã¿è¾¼ã¿ãªãŒã‚‰å‡ºåŠ› */
     while(siz>0) {
-        cutsize=siz;if(cutsize>=ASMCUTS) cutsize=ASMCUTS; /* 32k‚¸‚Â */
+        cutsize=siz;if(cutsize>=ASMCUTS) cutsize=ASMCUTS; /* 32kãšã¤ */
         loadbin(off,cutsize);
 		dump_out(fp,loadbuf,cutsize,start);
         asmsize=cutsize;
@@ -354,7 +354,7 @@ void data32_dump(int segnum,char *sectname,long off,long siz,long start,long siz
 }
 
 /**********************************************************************
- *  ƒZƒNƒVƒ‡ƒ“ƒwƒbƒ_[‚ğƒ_ƒ“ƒv‚·‚éB
+ *  ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹ã€‚
  **********************************************************************
  */
 void	section_dump()
@@ -368,62 +368,62 @@ void	section_dump()
         for(j=0;j<8;j++) sectname[j]=sect.Name[j];
         sectname[8]=0;
         printf("section : %s\n",sectname);
-        printf("    Virtual size          =%8lx\n",sect.VirtualSize);
-        printf("    Virtual address       =%8lx\n",sect.VirtualAddress);
-        printf("    Size of raw data      =%8lx\n",sect.SizeOfRawData);
-        printf("    Pointer to raw data   =%8lx\n",sect.PointerToRawData);
-        printf("    Pointer to relocations=%8lx\n",sect.PointerToRelocations);
-        printf("    Pointer to linenumbers=%8lx\n",sect.PointerToLinenumbers);
+        printf("    Virtual size          =%8x\n",sect.VirtualSize);
+        printf("    Virtual address       =%8x\n",sect.VirtualAddress);
+        printf("    Size of raw data      =%8x\n",sect.SizeOfRawData);
+        printf("    Pointer to raw data   =%8x\n",sect.PointerToRawData);
+        printf("    Pointer to relocations=%8x\n",sect.PointerToRelocations);
+        printf("    Pointer to linenumbers=%8x\n",sect.PointerToLinenumbers);
         printf("    Number of relocations =%8d\n" ,sect.NumberOfRelocations);
         printf("    Number of linenumbers =%8d\n" ,sect.NumberOfLinenumbers);
-        printf("    Characteristics       =%lx\n",sect.Characteristics);
+        printf("    Characteristics       =%x\n",sect.Characteristics);
       ifopt('s')
         if(sect.Characteristics & 0x0020) { /* .CODE */
-		    set_cpumode(1,1);	/* ƒAƒhƒŒƒXAƒIƒyƒ‰ƒ“ƒhƒTƒCƒY‹¤‚É‚R‚Q‚‚‚‰‚” */
-            code32_dump(i+1,sectname         /*ƒZƒNƒVƒ‡ƒ“–¼ */
-                       ,sect.PointerToRawData/*ƒtƒ@ƒCƒ‹‚Ìæ“ª‚©‚ç‚ÌƒIƒtƒZƒbƒg*/
-                       ,sect.SizeOfRawData   /* ƒuƒƒbƒNƒTƒCƒY */
-                       ,sect.VirtualAddress  /* ‰¼‘zƒAƒhƒŒƒX*/
+		    set_cpumode(1,1);	/* ã‚¢ãƒ‰ãƒ¬ã‚¹ã€ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã‚µã‚¤ã‚ºå…±ã«ï¼“ï¼’ï½‚ï½‰ï½” */
+            code32_dump(i+1,sectname         /*ã‚»ã‚¯ã‚·ãƒ§ãƒ³å */
+                       ,sect.PointerToRawData/*ãƒ•ã‚¡ã‚¤ãƒ«ã®å…ˆé ­ã‹ã‚‰ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ*/
+                       ,sect.SizeOfRawData   /* ãƒ–ãƒ­ãƒƒã‚¯ã‚µã‚¤ã‚º */
+                       ,sect.VirtualAddress  /* ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹*/
                           +pe.opt.ImageBase
-                       ,sect.VirtualSize     /* ‰¼‘zƒTƒCƒY */
+                       ,sect.VirtualSize     /* ä»®æƒ³ã‚µã‚¤ã‚º */
             );
         }
       ifopt('b')
-        data32_cut(i+1,sectname         /*ƒZƒNƒVƒ‡ƒ“–¼ */
-                       ,sect.PointerToRawData/*ƒtƒ@ƒCƒ‹‚Ìæ“ª‚©‚ç‚ÌƒIƒtƒZƒbƒg*/
-                       ,sect.SizeOfRawData   /* ƒuƒƒbƒNƒTƒCƒY */
-                       ,sect.VirtualAddress  /* ‰¼‘zƒAƒhƒŒƒX*/
-                       ,sect.VirtualSize     /* ‰¼‘zƒTƒCƒY */
+        data32_cut(i+1,sectname         /*ã‚»ã‚¯ã‚·ãƒ§ãƒ³å */
+                       ,sect.PointerToRawData/*ãƒ•ã‚¡ã‚¤ãƒ«ã®å…ˆé ­ã‹ã‚‰ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ*/
+                       ,sect.SizeOfRawData   /* ãƒ–ãƒ­ãƒƒã‚¯ã‚µã‚¤ã‚º */
+                       ,sect.VirtualAddress  /* ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹*/
+                       ,sect.VirtualSize     /* ä»®æƒ³ã‚µã‚¤ã‚º */
         );
       ifopt('h')
-        data32_dump(i+1,sectname         /*ƒZƒNƒVƒ‡ƒ“–¼ */
-                       ,sect.PointerToRawData/*ƒtƒ@ƒCƒ‹‚Ìæ“ª‚©‚ç‚ÌƒIƒtƒZƒbƒg*/
-                       ,sect.SizeOfRawData   /* ƒuƒƒbƒNƒTƒCƒY */
-                       ,sect.VirtualAddress+pe.opt.ImageBase  /* ‰¼‘zƒAƒhƒŒƒX*/
-                       ,sect.VirtualSize     /* ‰¼‘zƒTƒCƒY */
+        data32_dump(i+1,sectname         /*ã‚»ã‚¯ã‚·ãƒ§ãƒ³å */
+                       ,sect.PointerToRawData/*ãƒ•ã‚¡ã‚¤ãƒ«ã®å…ˆé ­ã‹ã‚‰ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ*/
+                       ,sect.SizeOfRawData   /* ãƒ–ãƒ­ãƒƒã‚¯ã‚µã‚¤ã‚º */
+                       ,sect.VirtualAddress+pe.opt.ImageBase  /* ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹*/
+                       ,sect.VirtualSize     /* ä»®æƒ³ã‚µã‚¤ã‚º */
         );
     }
 }
 
 /**********************************************************************
- *  ƒCƒ“ƒ|[ƒgƒe[ƒuƒ‹‚ğƒ_ƒ“ƒv‚·‚éB
+ *  ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹ã€‚
  **********************************************************************
  */
-IMPORT_DESC *import;	/* ƒCƒ“ƒ|[ƒgEƒe[ƒuƒ‹‚Ìƒwƒbƒ_[ */
-EXPORT_DESC *export;	/* ƒGƒNƒXƒ|[ƒgƒe[ƒuƒ‹‚Ìƒwƒbƒ_[ */
+IMPORT_DESC *import;	/* ã‚¤ãƒ³ãƒãƒ¼ãƒˆãƒ»ãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒ˜ãƒƒãƒ€ãƒ¼ */
+EXPORT_DESC *export;	/* ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒ˜ãƒƒãƒ€ãƒ¼ */
 typedef	struct HINT {
 	short	Hint;
 	char	Name[2];
 } HINT;
 
-long 	impdelta;	/* import section ‚Ì‰¼‘zƒAƒhƒŒƒXEƒIƒtƒZƒbƒg */
+int 	impdelta;	/* import section ã®ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒ»ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
 
-int	hint_dump(long rva,long size,long offset)
+int	hint_dump(int rva,int size,int offset)
 {
 	char labelbuf[128];
 	char modname[128];
-	long off;
-	long *p;
+	int off;
+	int *p;
 	HINT *h;
 	char *s;
 	
@@ -442,11 +442,11 @@ int	hint_dump(long rva,long size,long offset)
 	}
 #endif
 
-	p=(long *) (&loadbuf[offset]);
+	p=(int *) (&loadbuf[offset]);
 
 	while ( *p ) {
 		if( *p & 0x80000000L) {
-			 printf("   %6lx  %4u\n",rva,*p & 0xFFFF);
+			 printf("   %6x  %4u\n",rva,*p & 0xFFFF);
 			sprintf(labelbuf,"%s.%u",modname,*p & 0xFFFF);
 		}else{
 			off = *p - impdelta;
@@ -457,7 +457,7 @@ int	hint_dump(long rva,long size,long offset)
 			}
 #endif
 			h = (HINT *) ( &loadbuf[ off ]);
-			 printf("   %6lx  %4u:%s\n",rva,h->Hint, h->Name);
+			 printf("   %6x  %4u:%s\n",rva,h->Hint, h->Name);
 			sprintf(labelbuf,"%s.%s",modname, h->Name);
 		}
 		insert_hash2(rva,0,xstrdup(labelbuf));
@@ -468,20 +468,20 @@ int	hint_dump(long rva,long size,long offset)
 }
 
 /**********************************************************************
- *  .idata ƒZƒNƒVƒ‡ƒ“‚ğƒ_ƒ“ƒv‚·‚é
+ *  .idata ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹
  **********************************************************************
  */
-int	imports_dump(long offset,long size,long vadrs)
+int	imports_dump(int offset,int size,int vadrs)
 {
 	int i;
 	int descptr;
-	unsigned long off;
-	unsigned long import_off=0;
+	unsigned int off;
+	unsigned int import_off=0;
 
 	impdelta = vadrs;
 
 #if	0
-	/* •’Ê‚ÍIMPORT_DESC‚Í .idataƒZƒNƒVƒ‡ƒ“æ“ª‚É‚ ‚é‚Ì‚¾‚ªEEE */
+	/* æ™®é€šã¯IMPORT_DESCã¯ .idataã‚»ã‚¯ã‚·ãƒ§ãƒ³å…ˆé ­ã«ã‚ã‚‹ã®ã ãŒãƒ»ãƒ»ãƒ» */
 	import_off = pe.opt.DataDir[1].VirtualAddress - vadrs;
 	if(import_off) {
 		if(import_off > off) {
@@ -494,7 +494,7 @@ int	imports_dump(long offset,long size,long vadrs)
 
 #endif
 
-	if(size >= 0x10000) size = 0x10000;	//import table‚ÌƒTƒCƒY‚ğ64k‚Ü‚Å‚ÉŒÀ’è‚µ‚Äƒ[ƒh.
+	if(size >= 0x10000) size = 0x10000;	//import tableã®ã‚µã‚¤ã‚ºã‚’64kã¾ã§ã«é™å®šã—ã¦ãƒ­ãƒ¼ãƒ‰.
 	loadbin(offset,size);
 
 	import = (IMPORT_DESC *) &loadbuf[import_off];
@@ -518,11 +518,11 @@ int	imports_dump(long offset,long size,long vadrs)
 
 		ModuleName=&loadbuf[ (int)off ];
 		printf("  %s:\n", ModuleName);
-		printf("  Characteristics: %08lx\n", import->Characteristics);
- 		printf("  TimeDateStamp:   %08lx (%s)\n", import->TimeDateStamp,
+		printf("  Characteristics: %08x\n", import->Characteristics);
+ 		printf("  TimeDateStamp:   %08x (%s)\n", import->TimeDateStamp,
     							  timedate_string(import->TimeDateStamp));
- 		printf("  ForwarderChain:  %08lx\n", import->ForwarderChain);
- 		printf("  First thunk RVA: %08lx\n", import->FirstThunk);
+ 		printf("  ForwarderChain:  %08x\n", import->ForwarderChain);
+ 		printf("  First thunk RVA: %08x\n", import->FirstThunk);
  		printf("   thunk Ordinary: -- Import Function --\n");
 
 		if(import->Characteristics) {
@@ -545,15 +545,15 @@ int	imports_dump(long offset,long size,long vadrs)
 }
 
 /**********************************************************************
- *  .edata ƒZƒNƒVƒ‡ƒ“‚ğƒ_ƒ“ƒv‚·‚é
+ *  .edata ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹
  **********************************************************************
  */
-int	exports_dump(long offset,long size,long vadrs)
+int	exports_dump(int offset,int size,int vadrs)
 {
 	int i;
-	unsigned long off;
-	long  *name;
-	long  *functions;
+	unsigned int off;
+	int  *name;
+	int  *functions;
 	short *ordinals;
 	char  *labelptr;
 
@@ -574,15 +574,15 @@ int	exports_dump(long offset,long size,long vadrs)
 	ModuleName = &loadbuf[off];
  if(!IsOpt('x')) {
 	printf("  %s:\n", ModuleName);
-	printf("  Characteristics: %08lx\n", export->Characteristics);
-	printf("  TimeDateStamp:   %08lx (%s)\n", export->TimeDateStamp,
+	printf("  Characteristics: %08x\n", export->Characteristics);
+	printf("  TimeDateStamp:   %08x (%s)\n", export->TimeDateStamp,
     						  timedate_string(export->TimeDateStamp));
 	printf("  Version:         %d.%d\n", export->MajorVersion,
 									     export->MinorVersion);
  }
-	functions =(long *)&loadbuf[export->AddressOfFunctions    -impdelta];
+	functions =(int *)&loadbuf[export->AddressOfFunctions    -impdelta];
 	ordinals  =(short*)&loadbuf[export->AddressOfNameOrdinals -impdelta];
-	name      =(long *)&loadbuf[export->AddressOfNames        -impdelta];
+	name      =(int *)&loadbuf[export->AddressOfNames        -impdelta];
 
  if(!IsOpt('x')) {
 	printf("   EntryAdrs Ordn: -- Export Function --\n");
@@ -598,14 +598,14 @@ int	exports_dump(long offset,long size,long vadrs)
 		labelptr = &loadbuf[*name - impdelta];
 
  if(!IsOpt('x')) {
-		printf("   %08lx  %4lu:%s\n",
+		printf("   %08x  %4u:%s\n",
 				*functions,
 				*ordinals + export->Base,
 				 labelptr
 			  );
 		insert_hash2(*functions + pe.opt.ImageBase,0,xstrdup(labelptr));
  }else{
-		printf("  %s.%lu	%s\n",
+		printf("  %s.%u	%s\n",
 				 ModuleName,
 				*ordinals + export->Base,
 				 labelptr
@@ -621,7 +621,7 @@ int	exports_dump(long offset,long size,long vadrs)
 
 
 /**********************************************************************
- *  ‰¼‘zƒAƒhƒŒƒX‚ğèŠ|‚©‚è‚ÉARVA‚ğŒŸõ‚µ‚Ä‚İ‚é.
+ *  ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æ‰‹æ›ã‹ã‚Šã«ã€RVAã‚’æ¤œç´¢ã—ã¦ã¿ã‚‹.
  **********************************************************************
  */
 int	find_RVAoffset(int vadrs,int *secsize)
@@ -633,17 +633,17 @@ int	find_RVAoffset(int vadrs,int *secsize)
 
         off = vadrs - sect.VirtualAddress;
 
-        //‰¼‘zƒAƒhƒŒƒX‹²‚İ‘Å‚¿.
+        //ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹æŒŸã¿æ‰“ã¡.
 		if((off>=0) && (off<sect.SizeOfRawData)) {
-			*secsize = sect.SizeOfRawData - off;	//‚»‚ÌƒZƒNƒVƒ‡ƒ“‚Ìc‚èƒoƒCƒg”.
-			return sect.PointerToRawData + off;		//”­Œ©‚µ‚½‰¼‘zƒAƒhƒŒƒX‚É‘Î‚·‚éRVA.
+			*secsize = sect.SizeOfRawData - off;	//ãã®ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®æ®‹ã‚Šãƒã‚¤ãƒˆæ•°.
+			return sect.PointerToRawData + off;		//ç™ºè¦‹ã—ãŸä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹ã«å¯¾ã™ã‚‹RVA.
 		}
     }
-	return 0;	//—^‚¦‚ç‚ê‚½‰¼‘zƒAƒhƒŒƒX‚ğŠÜ‚ñ‚Å‚¢‚éƒZƒNƒVƒ‡ƒ“‚ğ,
-				//”­Œ©‚Å‚«‚È‚©‚Á‚½.
+	return 0;	//ä¸ãˆã‚‰ã‚ŒãŸä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å«ã‚“ã§ã„ã‚‹ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’,
+				//ç™ºè¦‹ã§ããªã‹ã£ãŸ.
 }
 /**********************************************************************
- *  .idata .edata ƒZƒNƒVƒ‡ƒ“‚ğ’T‚µ‚Äƒ_ƒ“ƒv‚·‚é
+ *  .idata .edata ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’æ¢ã—ã¦ãƒ€ãƒ³ãƒ—ã™ã‚‹
  **********************************************************************
  */
 void	imp_exp_find(int f)
@@ -651,8 +651,8 @@ void	imp_exp_find(int f)
     int i,j;
     int expidx=0;	//"EXPORT",
     int impidx=1;	//"IMPORT",
-	int imp_PointerToRawData;	//IMPORTƒe[ƒuƒ‹‚Ìƒtƒ@ƒCƒ‹ƒIƒtƒZƒbƒg
-	int exp_PointerToRawData;	//EXPORTƒe[ƒuƒ‹‚Ìƒtƒ@ƒCƒ‹ƒIƒtƒZƒbƒg
+	int imp_PointerToRawData;	//IMPORTãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+	int exp_PointerToRawData;	//EXPORTãƒ†ãƒ¼ãƒ–ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	int secsize;
 
 	if(f) {
@@ -662,7 +662,7 @@ void	imp_exp_find(int f)
 		imports_dump(
 			imp_PointerToRawData,
 			secsize,
-			pe.opt.DataDir[impidx].VirtualAddress	/* ‰¼‘zƒAƒhƒŒƒX*/
+			pe.opt.DataDir[impidx].VirtualAddress	/* ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹*/
 		);
     }
 		exp_PointerToRawData = find_RVAoffset(pe.opt.DataDir[expidx].VirtualAddress,&secsize);
@@ -670,13 +670,13 @@ void	imp_exp_find(int f)
 		exports_dump(
 			exp_PointerToRawData,
 			pe.opt.DataDir[expidx].Size,
-			pe.opt.DataDir[expidx].VirtualAddress	/* ‰¼‘zƒAƒhƒŒƒX*/
+			pe.opt.DataDir[expidx].VirtualAddress	/* ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹*/
 		);
 }
 
 
 /**********************************************************************
- *  .idata .edata ƒZƒNƒVƒ‡ƒ“‚ğ’T‚µ‚Äƒ_ƒ“ƒv‚·‚éi‹Œƒ‹[ƒ`ƒ“j
+ *  .idata .edata ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’æ¢ã—ã¦ãƒ€ãƒ³ãƒ—ã™ã‚‹ï¼ˆæ—§ãƒ«ãƒ¼ãƒãƒ³ï¼‰
  **********************************************************************
  */
 #if	0
@@ -695,14 +695,14 @@ void	imp_exp_find(int f)
 			imports_dump(
 				sect.PointerToRawData,
 				sect.SizeOfRawData,
-                sect.VirtualAddress  /* ‰¼‘zƒAƒhƒŒƒX*/
+                sect.VirtualAddress  /* ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹*/
 			);
         }
         if(stricmp(sectname,".edata")==0){
 			exports_dump(
 				sect.PointerToRawData,
 				sect.SizeOfRawData,
-                sect.VirtualAddress  /* ‰¼‘zƒAƒhƒŒƒX*/
+                sect.VirtualAddress  /* ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹*/
 			);
         }
     }

@@ -1,13 +1,13 @@
 /**********************************************************************
- *  ‚o‚dŒ`®Àsƒtƒ@ƒCƒ‹‚Ìƒwƒbƒ_[ƒtƒ@ƒCƒ‹
+ *  ï¼°ï¼¥å½¢å¼å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ˜ãƒƒãƒ€ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«
  **********************************************************************
  */
 typedef struct FILE_HDR {
     Ushort  Machine;
     Ushort  NumberOfSections;
-    Ulong   TimeDateStamp;
-    Ulong   PointerToSymbolTable;
-    Ulong   NumberOfSymbols;
+    Uint   TimeDateStamp;
+    Uint   PointerToSymbolTable;
+    Uint   NumberOfSymbols;
     Ushort  SizeOfOptionalHeader;
     Ushort  Characteristics;
 } FILE_HDR;
@@ -18,12 +18,12 @@ typedef struct FILE_HDR {
  **********************************************************************
  */
 typedef struct DATA_DIR {
-    Ulong   VirtualAddress;
-    Ulong   Size;
+    Uint   VirtualAddress;
+    Uint   Size;
 } DATA_DIR;
 
 /**********************************************************************
- *  ƒIƒvƒVƒ‡ƒiƒ‹ƒwƒbƒ_[
+ *  ã‚ªãƒ—ã‚·ãƒ§ãƒŠãƒ«ãƒ˜ãƒƒãƒ€ãƒ¼
  **********************************************************************
  */
 typedef struct OPT_HDR {
@@ -32,98 +32,98 @@ typedef struct OPT_HDR {
     Ushort  Magic;
     Uchar   MajorLinkerVersion;
     Uchar   MinorLinkerVersion;
-    Ulong   SizeOfCode;
-    Ulong   SizeOfInitializedData;
-    Ulong   SizeOfUninitializedData;
-    Ulong   AddressOfEntryPoint;
-    Ulong   BaseOfCode;
-    Ulong   BaseOfData;
+    Uint   SizeOfCode;
+    Uint   SizeOfInitializedData;
+    Uint   SizeOfUninitializedData;
+    Uint   AddressOfEntryPoint;
+    Uint   BaseOfCode;
+    Uint   BaseOfData;
 
     /* NT additional fields */
 
-    Ulong   ImageBase;
-    Ulong   SectionAlignment;
-    Ulong   FileAlignment;
+    Uint   ImageBase;
+    Uint   SectionAlignment;
+    Uint   FileAlignment;
     Ushort  MajorOperatingSystemVersion;
     Ushort  MinorOperatingSystemVersion;
     Ushort  MajorImageVersion;
     Ushort  MinorImageVersion;
     Ushort  MajorSubsystemVersion;
     Ushort  MinorSubsystemVersion;
-    Ulong   Reserved1;
-    Ulong   SizeOfImage;
-    Ulong   SizeOfHeaders;
-    Ulong   CheckSum;
+    Uint   Reserved1;
+    Uint   SizeOfImage;
+    Uint   SizeOfHeaders;
+    Uint   CheckSum;
     Ushort  Subsystem;
     Ushort  DllCharacteristics;
-    Ulong   SizeOfStackReserve;
-    Ulong   SizeOfStackCommit;
-    Ulong   SizeOfHeapReserve;
-    Ulong   SizeOfHeapCommit;
-    Ulong   LoaderFlags;
-    Ulong   NumberOfRvaAndSizes;
+    Uint   SizeOfStackReserve;
+    Uint   SizeOfStackCommit;
+    Uint   SizeOfHeapReserve;
+    Uint   SizeOfHeapCommit;
+    Uint   LoaderFlags;
+    Uint   NumberOfRvaAndSizes;
     DATA_DIR DataDir[16];
 } OPT_HDR;
 
 /**********************************************************************
- *  ƒZƒNƒVƒ‡ƒ“ƒwƒbƒ_[
+ *  ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãƒ˜ãƒƒãƒ€ãƒ¼
  **********************************************************************
  */
 typedef struct SECTION_HDR {
     Uchar   Name[8];
-    Ulong   VirtualSize;
-    Ulong   VirtualAddress;
-    Ulong   SizeOfRawData;
-    Ulong   PointerToRawData;
-    Ulong   PointerToRelocations;
-    Ulong   PointerToLinenumbers;
+    Uint   VirtualSize;
+    Uint   VirtualAddress;
+    Uint   SizeOfRawData;
+    Uint   PointerToRawData;
+    Uint   PointerToRelocations;
+    Uint   PointerToLinenumbers;
     Ushort  NumberOfRelocations;
     Ushort  NumberOfLinenumbers;
-    Ulong   Characteristics;
+    Uint   Characteristics;
 } SECTION_HDR;
 
-/* .edata ‚Ìæ“ª */
+/* .edata ã®å…ˆé ­ */
 typedef struct EXPORT_DESC {
-    Ulong   Characteristics;
-    Ulong   TimeDateStamp;
+    Uint   Characteristics;
+    Uint   TimeDateStamp;
     Ushort  MajorVersion;
     Ushort  MinorVersion;
-    Ulong   Name;
-    Ulong   Base;
-    Ulong   NumberOfFunctions;
-    Ulong   NumberOfNames;
-    Ulong   AddressOfFunctions;
-    Ulong   AddressOfNames;
-    Ulong   AddressOfNameOrdinals;
+    Uint   Name;
+    Uint   Base;
+    Uint   NumberOfFunctions;
+    Uint   NumberOfNames;
+    Uint   AddressOfFunctions;
+    Uint   AddressOfNames;
+    Uint   AddressOfNameOrdinals;
 } EXPORT_DESC;
 
-/* .idata ‚Ìæ“ª */
+/* .idata ã®å…ˆé ­ */
 typedef struct IMPORT_DESC {
-    long	Characteristics;
-    long	TimeDateStamp;
-    long	ForwarderChain;
-    long	Name;
-    long	FirstThunk;
+    int	Characteristics;
+    int	TimeDateStamp;
+    int	ForwarderChain;
+    int	Name;
+    int	FirstThunk;
 } IMPORT_DESC;
 
 
 
 /**********************************************************************
- *  ‚o‚dŒ`®‚Ìƒwƒbƒ_[‚Ì‘S‘Ì\‘¢
+ *  ï¼°ï¼¥å½¢å¼ã®ãƒ˜ãƒƒãƒ€ãƒ¼ã®å…¨ä½“æ§‹é€ 
  **********************************************************************
  */
 typedef struct PE_HDR {
-    char     Signature[4];	/* •¶š—ñ 'PE'          */
-    FILE_HDR hdr;		/* ƒtƒ@ƒCƒ‹ƒwƒbƒ_[     */
-    OPT_HDR  opt;		/* ƒIƒvƒVƒ‡ƒiƒ‹ƒwƒbƒ_[ */
+    char     Signature[4];	/* æ–‡å­—åˆ— 'PE'          */
+    FILE_HDR hdr;		/* ãƒ•ã‚¡ã‚¤ãƒ«ãƒ˜ãƒƒãƒ€ãƒ¼     */
+    OPT_HDR  opt;		/* ã‚ªãƒ—ã‚·ãƒ§ãƒŠãƒ«ãƒ˜ãƒƒãƒ€ãƒ¼ */
 } PE_HDR;
 
 /**********************************************************************
-  PE ƒtƒH[ƒ}ƒbƒg‚Ì\¬
+  PE ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®æ§‹æˆ
 
-  (1) MS-DOSƒI[ƒ‹ƒhƒwƒbƒ_[
-  (2) 'PE'ƒwƒbƒ_[ (ã‹L‚Ìƒwƒbƒ_[)
-  (3) ƒZƒNƒVƒ‡ƒ“ƒwƒbƒ_[ x [ƒZƒNƒVƒ‡ƒ“”]
+  (1) MS-DOSã‚ªãƒ¼ãƒ«ãƒ‰ãƒ˜ãƒƒãƒ€ãƒ¼
+  (2) 'PE'ãƒ˜ãƒƒãƒ€ãƒ¼ (ä¸Šè¨˜ã®ãƒ˜ãƒƒãƒ€ãƒ¼)
+  (3) ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãƒ˜ãƒƒãƒ€ãƒ¼ x [ã‚»ã‚¯ã‚·ãƒ§ãƒ³æ•°]
 
  **********************************************************************
  */

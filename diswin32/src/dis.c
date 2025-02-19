@@ -1,31 +1,32 @@
 /**********************************************************************
- *  ‚W‚O‚W‚U‹tƒAƒZƒ“ƒuƒ‰
+ *  ï¼˜ï¼ï¼˜ï¼–é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ©
  **********************************************************************
  */
 #include <string.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include "diswin.h"
 
 void	touppers(char *s);
-char 	*search_hash2(long val,int flg);
+char 	*search_hash2(int val,int flg);
 
 
-/***  ƒvƒƒgƒ^ƒCƒvéŒ¾@***/
+/***  ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€ã€€***/
 void	set_cpumode(int op,int ad);
 void	set_exemode(int mode);
 int 	dbr(void);
 int 	db(void);
 int 	dw(void);
-long	dd(void);
+int	dd(void);
 void	mov(void);
-long	disasm_i386(char *buf,long start,long size,FILE *ofp);
+int	disasm_i386(char *buf,int start,int size,FILE *ofp);
 int 	retchk(char *s);
 int 	chkprefix(void);
 char	*sputs(char *p,char *s);
 void	mne(char *s);
 void	op1(char *s);
 void	op2(char *s);
-void	mnes(int n,char *s,...);
+//void	mnes(int n,char *s,...);
 void	disline(void);
 void	hexprints(char *op,int n);
 void	disline1(void);
@@ -63,15 +64,17 @@ void	inst_mmx(int opc);
 void	inst_mmx_shift(int opc);
 void	inst_mmx_mov(int opc);
 void	inst_FPU(int opc);
+void inst_kni(int opc,int rep);
+void	AMD3dnow(void);
 
 
-char    hexbuf[128];    char *hexp;     /* ƒwƒLƒTƒ_ƒ“ƒv */
-char    mnebuf[32];     char *mnep;     /* ƒj[ƒ‚ƒjƒbƒN */
-char    op1buf[256];     char *op1p;     /* ƒIƒyƒ‰ƒ“ƒh‚P */
-char    op2buf[256];     char *op2p;     /* ƒIƒyƒ‰ƒ“ƒh‚Q */
-char	rembuf[256];	char *remp;		/* remark       */
-char    disbuf[256];    char *disp;     /* ‚Ps•ª‚Ìbuff */
-char	symbol[256];
+char    hexbuf[1128];    char *hexp;     /* ãƒ˜ã‚­ã‚µãƒ€ãƒ³ãƒ— */
+char    mnebuf[132];     char *mnep;     /* ãƒ‹ãƒ¼ãƒ¢ãƒ‹ãƒƒã‚¯ */
+char    op1buf[1256];    char *op1p;     /* ã‚ªãƒšãƒ©ãƒ³ãƒ‰ï¼‘ */
+char    op2buf[1256];    char *op2p;     /* ã‚ªãƒšãƒ©ãƒ³ãƒ‰ï¼’ */
+char	rembuf[1256];	 char *remp;		/* remark       */
+char    disbuf[1256];    char *disp;     /* ï¼‘è¡Œåˆ†ã®buff */
+char	symbol[1256];
 
 char	*instbuf;
 
@@ -92,24 +95,24 @@ char    *ptyp[]=
 {"byte ptr ","word ptr ","dword ptr ","qword ptr ","tbyte ptr ","fword ptr ","",""};
 
 
-char    *op;    /* Œ»İ‚Ì‰ğÍˆÊ’u‚ğw‚µ‚Ä‚¢‚éƒ|ƒCƒ“ƒ^ */
-char    *op0;   /* –½—ß‚Ìæ“ª”Ô’n‚ğw‚µ‚Ä‚¢‚éƒ|ƒCƒ“ƒ^ */
-char    *opp;   /* prefix‚àŠÜ‚ß‚½–½—ß‚Ìæ“ª”Ô’n‚ğw‚µ‚Ä‚¢‚éƒ|ƒCƒ“ƒ^ */
-int     seg_prefix=0;	/*ƒZƒOƒƒ“ƒgƒI[ƒo[ƒ‰ƒCƒhEƒvƒŒƒtƒBƒbƒNƒX‚ª•t‚¢‚Ä‚¢‚ê‚Î‚»‚ÌƒR[ƒh*/
-int     opsize32def=0;	/*ƒfƒtƒHƒ‹ƒgF‚P‚È‚çAƒIƒyƒ‰ƒ“ƒhƒTƒCƒY  ‚ª‚R‚Qƒrƒbƒg*/
+char    *op;    /* ç¾åœ¨ã®è§£æä½ç½®ã‚’æŒ‡ã—ã¦ã„ã‚‹ãƒã‚¤ãƒ³ã‚¿ */
+char    *op0;   /* å‘½ä»¤ã®å…ˆé ­ç•ªåœ°ã‚’æŒ‡ã—ã¦ã„ã‚‹ãƒã‚¤ãƒ³ã‚¿ */
+char    *opp;   /* prefixã‚‚å«ã‚ãŸå‘½ä»¤ã®å…ˆé ­ç•ªåœ°ã‚’æŒ‡ã—ã¦ã„ã‚‹ãƒã‚¤ãƒ³ã‚¿ */
+int     seg_prefix=0;	/*ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ãƒ»ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãŒä»˜ã„ã¦ã„ã‚Œã°ãã®ã‚³ãƒ¼ãƒ‰*/
+int     opsize32def=0;	/*ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼šï¼‘ãªã‚‰ã€ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã‚µã‚¤ã‚º  ãŒï¼“ï¼’ãƒ“ãƒƒãƒˆ*/
 int		exemode=0;		/* LE=1 */
-int     adsize32def=0;	/*ƒfƒtƒHƒ‹ƒgF‚P‚È‚çAƒAƒhƒŒƒXw’èƒTƒCƒY‚ª‚R‚Qƒrƒbƒg*/
-int     opsize32  =0;	/*Œ»İ‚Ìó‘ÔF‚P‚È‚çAƒIƒyƒ‰ƒ“ƒhƒTƒCƒY  ‚ª‚R‚Qƒrƒbƒg*/
-int     adsize32  =0;	/*Œ»İ‚Ìó‘ÔF‚P‚È‚çAƒAƒhƒŒƒXw’èƒTƒCƒY‚ª‚R‚Qƒrƒbƒg*/
-int     cnt_prefix=0;	/*ƒvƒŒƒtƒBƒbƒNƒX‚ÌŒÂ”‚ğƒJƒEƒ“ƒg*/
-long	startadrs=0;	/*ƒ^[ƒQƒbƒgã‚Å‚ÌŠJnƒAƒhƒŒƒX*/
-int     mmx=0;          /*MMX ƒŒƒWƒXƒ^‚ğg—p‚·‚é*/
+int     adsize32def=0;	/*ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼šï¼‘ãªã‚‰ã€ã‚¢ãƒ‰ãƒ¬ã‚¹æŒ‡å®šã‚µã‚¤ã‚ºãŒï¼“ï¼’ãƒ“ãƒƒãƒˆ*/
+int     opsize32  =0;	/*ç¾åœ¨ã®çŠ¶æ…‹ï¼šï¼‘ãªã‚‰ã€ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã‚µã‚¤ã‚º  ãŒï¼“ï¼’ãƒ“ãƒƒãƒˆ*/
+int     adsize32  =0;	/*ç¾åœ¨ã®çŠ¶æ…‹ï¼šï¼‘ãªã‚‰ã€ã‚¢ãƒ‰ãƒ¬ã‚¹æŒ‡å®šã‚µã‚¤ã‚ºãŒï¼“ï¼’ãƒ“ãƒƒãƒˆ*/
+int     cnt_prefix=0;	/*ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã®å€‹æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ*/
+int	startadrs=0;	/*ã‚¿ãƒ¼ã‚²ãƒƒãƒˆä¸Šã§ã®é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹*/
+int     mmx=0;          /*MMX ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’ä½¿ç”¨ã™ã‚‹*/
 extern  int     filtermode;
 extern  int     commentmode;
-int	win_printlabel(long off,FILE *fp);
+int	win_printlabel(int off,FILE *fp);
 int	win_printrel( int off,char *buf);
 
-/* ƒIƒyƒ‰ƒ“ƒh‚ªƒ|ƒCƒ“ƒ^‚Å‚ ‚éê‡A‚»‚ÌƒTƒCƒY‚ğ¦‚·ƒqƒ“ƒg */
+/* ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒãƒã‚¤ãƒ³ã‚¿ã§ã‚ã‚‹å ´åˆã€ãã®ã‚µã‚¤ã‚ºã‚’ç¤ºã™ãƒ’ãƒ³ãƒˆ */
 #define NONTYPE   0		/* byte ptr 	*/
 #define PTRTYPE   1		/* word ptr 	*/
 #define DWORDTYPE 2		/* dword ptr	*/
@@ -117,13 +120,13 @@ int	win_printrel( int off,char *buf);
 #define TBYTETYPE 4		/* tbyte ptr	*/
 #define FWORDTYPE 5		/* fword ptr	*/
 
-/* –½—ßƒoƒbƒtƒ@‚ğw‚·ƒ|ƒCƒ“ƒ^‚©‚ç‚h‚o‚ğ“¾‚é. */
+/* å‘½ä»¤ãƒãƒƒãƒ•ã‚¡ã‚’æŒ‡ã™ãƒã‚¤ãƒ³ã‚¿ã‹ã‚‰ï¼©ï¼°ã‚’å¾—ã‚‹. */
 #define	IP(ptr)  (startadrs+((ptr)-instbuf)) /* 80x86 Instruction Pointer (offset part)*/
 #define UNDEF   "?undef?"
 
 
 /**********************************************************************
- *  ‰ğÍ‘O‚ÉAƒZƒOƒƒ“ƒg‚ªuse16‚È‚Ì‚©use32‚È‚Ì‚©‚ğw’è‚·‚é
+ *  è§£æå‰ã«ã€ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãŒuse16ãªã®ã‹use32ãªã®ã‹ã‚’æŒ‡å®šã™ã‚‹
  **********************************************************************
  */
 void	set_cpumode(int op,int ad)
@@ -136,20 +139,20 @@ void	set_exemode(int mode)
 	exemode=mode;
 }
 /**********************************************************************
- *  ‰ğÍƒf[ƒ^‚ğæ‚èo‚·ŠÖ”
+ *  è§£æãƒ‡ãƒ¼ã‚¿ã‚’å–ã‚Šå‡ºã™é–¢æ•°
  **********************************************************************
  */
 int     dbr()
 {
-        return (*op++);         /* •„†•t‚« */
+        return (*op++);         /* ç¬¦å·ä»˜ã */
 }
 
 int     db()
 {
-        return (*op++) & 0xff;  /* •„†‚È‚µ */
+        return (*op++) & 0xff;  /* ç¬¦å·ãªã— */
 }
 
-int     dw()                    /* ƒ[ƒh */
+int     dw()                    /* ãƒ¯ãƒ¼ãƒ‰ */
 {
         int h,l;
         l = (*op++) & 0xff;
@@ -157,11 +160,11 @@ int     dw()                    /* ƒ[ƒh */
         return l|(h<<8);
 }
 
-long    dd()                    /* ƒƒ“ƒOƒ[ƒh */
+int    dd()                    /* ãƒ­ãƒ³ã‚°ãƒ¯ãƒ¼ãƒ‰ */
 {
-        long *dword;
+        int *dword;
 
-        dword=(long *)op;       /* ƒrƒbƒOƒGƒ“ƒfƒBƒAƒ“‚Ì‹@ŠB‚Å‚Í—v’ˆÓIII*/
+        dword=(int *)op;       /* ãƒ“ãƒƒã‚°ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³ã®æ©Ÿæ¢°ã§ã¯è¦æ³¨æ„ï¼ï¼ï¼*/
         op+=4;
         return (*dword);
 }
@@ -177,11 +180,11 @@ void	mov()
 
 
 /**********************************************************************
- *  w’è‚³‚ê‚½ƒoƒCƒg”‚Ì‹tƒAƒZƒ“ƒuƒ‹‚ğs‚È‚¢A‚e‚h‚k‚d‚Éo—Í‚·‚é.
+ *  æŒ‡å®šã•ã‚ŒãŸãƒã‚¤ãƒˆæ•°ã®é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ã‚’è¡Œãªã„ã€ï¼¦ï¼©ï¼¬ï¼¥ã«å‡ºåŠ›ã™ã‚‹.
  **********************************************************************
- *  ƒAƒZƒ“ƒuƒ‹‚µ‚½ƒoƒCƒg”‚ğlong ‚Å•Ô‚·.
+ *  ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ã—ãŸãƒã‚¤ãƒˆæ•°ã‚’int ã§è¿”ã™.
  */
-long disasm_i386(char *buf,long start,long size,FILE *ofp)
+int disasm_i386(char *buf,int start,int size,FILE *ofp)
 {
 	unsigned short asmsize;
 	char *endadrs;
@@ -192,37 +195,36 @@ long disasm_i386(char *buf,long start,long size,FILE *ofp)
         while(op < endadrs) {
 
                 win_printlabel( IP(op) ,ofp);
-        /* ‚P–½—ß•ª‚Ì‰ğÍ */
-                opp=op;         /* prefix‚ğŠÜ‚ß‚½æ“ª‚Ìƒ|ƒCƒ“ƒ^ */
+        /* ï¼‘å‘½ä»¤åˆ†ã®è§£æ */
+                opp=op;         /* prefixã‚’å«ã‚ãŸå…ˆé ­ã®ãƒã‚¤ãƒ³ã‚¿ */
                 seg_prefix=0;
                 opsize32  =opsize32def;
                 adsize32  =adsize32def;
                 cnt_prefix=0;
-                while( chkprefix() ) {  /*prefix–½—ß‚ğ“Ç‚Ş      */
+                while( chkprefix() ) {  /*prefixå‘½ä»¤ã‚’èª­ã‚€      */
                         if( ++cnt_prefix>=4) break;
                 }
-                op0=op;         /* predix‚ğŠÜ‚Ü‚È‚¢æ“ªƒ|ƒCƒ“ƒ^ */
-                disline();      /* prefix‚ğŠÜ‚Ü‚È‚¢–½—ß‰ğÍ     */
-                cutspc(disbuf); /* s––‚Ì—]•ª‚ÈƒXƒy[ƒX‚ğæ‚è‹‚é*/
+                op0=op;         /* predixã‚’å«ã¾ãªã„å…ˆé ­ãƒã‚¤ãƒ³ã‚¿ */
+                disline();      /* prefixã‚’å«ã¾ãªã„å‘½ä»¤è§£æ     */
+                cutspc(disbuf); /* è¡Œæœ«ã®ä½™åˆ†ãªã‚¹ãƒšãƒ¼ã‚¹ã‚’å–ã‚Šå»ã‚‹*/
 /***            win_printrel(IP(op0) + 1 ,disbuf+27);***/
 
-        /* ‚Ps•ª‚Ì•\¦ */
+        /* ï¼‘è¡Œåˆ†ã®è¡¨ç¤º */
                 touppers(disbuf);
                 fprintf(ofp,"%s" CRLF,disbuf);
                 
                 if(filtermode) {
-                        mnebuf[3]=0;	/* retf jmpf ‚ÌÅŒã‚Ì1š‚ğí‚é.(‰˜‚¢ˆ—) */
-                        if(retchk(mnebuf)) {	/* ret,jmp ‚©‚Ç‚¤‚©‚ğ’²‚×‚é */
-                                fprintf(ofp,CRLF);/* RET ‚ÌŒã‚ë‚É‹ós‚ğ•t‰Á */
+                        mnebuf[3]=0;	/* retf jmpf ã®æœ€å¾Œã®1å­—ã‚’å‰Šã‚‹.(æ±šã„å‡¦ç†) */
+                        if(retchk(mnebuf)) {	/* ret,jmp ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹ */
+                                fprintf(ofp,CRLF);/* RET ã®å¾Œã‚ã«ç©ºè¡Œã‚’ä»˜åŠ  */
                         }
                 }
         }
         asmsize = op - buf;
-        return asmsize;		/* ‹tƒAƒZƒ“ƒuƒ‹‚µ‚½‘ƒoƒCƒg”‚ğ•Ô‹p‚·‚é(‘±‚«‚Ì–½—ßˆÊ’uŠm’è‚Ìˆ×)*/
+        return asmsize;		/* é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«ã—ãŸç·ãƒã‚¤ãƒˆæ•°ã‚’è¿”å´ã™ã‚‹(ç¶šãã®å‘½ä»¤ä½ç½®ç¢ºå®šã®ç‚º)*/
 }
 
-retchk(s)
-char *s;
+int retchk(char *s)
 {
         if(strcmp(s,"ret")==0) return 1;
         if(strcmp(s,"jmp")==0) return 1;
@@ -230,7 +232,7 @@ char *s;
 }
 
 
-chkprefix()
+int chkprefix(void)
 {
         switch(*op) {
          case 0x26:
@@ -255,11 +257,14 @@ chkprefix()
 }
 
 #define sputc(c,p) *(p)++ = c;
+
 char   *sputs(char *p,char *s)
 {
-        while(*s) *p++ = *s++;
-        *p = 0;
-        return p;
+	while(*s) {
+		*p++ = *s++;
+	}
+	*p = 0;
+	return p;
 }
 
 #define PR1    op1p += sprintf
@@ -267,7 +272,8 @@ char   *sputs(char *p,char *s)
 
 void	mne(char *s)
 {
-        mnep=sputs(mnep,s);
+//	printf(" >>> sputs(%lx,%lx)\n",(size_t) mnep,(size_t)s);
+      mnep=sputs(mnep,s);
 }
 void	op1(char *s)
 {
@@ -279,19 +285,39 @@ void	op2(char *s)
 }
 void	rem(char *s)
 {
-	if(commentmode)
+	if(commentmode) {
         remp=sputs(remp,s);
+	}
 }
-void	mnes(int n,char *s,...)
+void	mnes(int n,...)
 {
-        char **p;
+	int i;
+	char *t;
+	va_list args;
+	
+	va_start(args,n);
+
+	for(i=0;i<n;i++) {
+		t = va_arg(args,char*);
+	}
+	
+	mne(va_arg(args,char*) );
+
+	va_end(args);
+}
+
+
+#if 0
+void	mnes(int n,char *s,...)
+	char **p;
         p = &s;
         mne(p[n]);
 }
+#endif
 
 
 /**********************************************************************
- *  ‚Ps•ª‚Ì‹tƒAƒZƒ“ƒuƒ‹
+ *  ï¼‘è¡Œåˆ†ã®é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«
  **********************************************************************
  */
 void	disline()
@@ -325,7 +351,7 @@ void	disline()
 }
 
 /**********************************************************************
- *  ‚P‚Ui”‚Å–½—ß‚ğ•\¦‚·‚é
+ *  ï¼‘ï¼–é€²æ•°ã§å‘½ä»¤ã‚’è¡¨ç¤ºã™ã‚‹
  **********************************************************************
  */
 void	hexprints(char *op,int n)
@@ -333,7 +359,7 @@ void	hexprints(char *op,int n)
 
 //		if(op< (char *)0x00010000){ hexp+=sprintf(hexp,"#ERR %08x",op);return;}
 //		if(op>=(char *)0x02000000){ hexp+=sprintf(hexp,"#ERR %08x",op);return;}
-//	ã‹L:À‚Íop1buf[128]‚ªƒI[ƒoƒtƒ[‚µ‚Ä€‚ñ‚Å‚¢‚½...
+//	ä¸Šè¨˜:å®Ÿã¯op1buf[128]ãŒã‚ªãƒ¼ãƒãƒ•ãƒ­ãƒ¼ã—ã¦æ­»ã‚“ã§ã„ãŸ...
 //
 
         while(n) {
@@ -344,10 +370,10 @@ void	hexprints(char *op,int n)
 }
 
 /**********************************************************************
- *  ‚Ps‹tƒAƒZƒ“ƒuƒ‰i–½—ß‰ğÍ‚Ì–{‘Ìj
+ *  ï¼‘è¡Œé€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ©ï¼ˆå‘½ä»¤è§£æã®æœ¬ä½“ï¼‰
  **********************************************************************
  */
-void	disline1()
+void	disline1(void)
 {
         int opc;
         int mod_rm;
@@ -357,9 +383,9 @@ void	disline1()
         int f;
         
         if(adsize32def) {
-            sprintf(hexp,"%08lx ",IP(opp) );hexp+=9;
+            sprintf(hexp,"%08x ",(int)IP(opp) );hexp+=9;
         }else{
-            sprintf(hexp,"%04x ",IP(opp) );hexp+=5;
+            sprintf(hexp,"%04x ",(int)IP(opp) );hexp+=5;
         }
         opc = (*op++) & 0xff;
         
@@ -681,7 +707,7 @@ void	disline1()
         mne("aam");
 
         if(mod_rm!=10) {
-                PR1(op1p,"%x",mod_rm);  /* AAM AAD‚ÌƒIƒyƒ‰ƒ“ƒh‚ª‚P‚OˆÈŠOI */
+                PR1(op1p,"%x",mod_rm);  /* AAM AADã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒï¼‘ï¼ä»¥å¤–ï¼ */
         }
         
         rem("AL=(AH*N)+AL;AH=0");
@@ -690,7 +716,7 @@ void	disline1()
         mod_rm=(*op++) & 0xff;
         mne("aad");
         if(mod_rm!=10) {
-                PR1(op1p,"%x",mod_rm);  /* AAM AAD‚ÌƒIƒyƒ‰ƒ“ƒh‚ª‚P‚OˆÈŠOI */
+                PR1(op1p,"%x",mod_rm);  /* AAM AADã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒï¼‘ï¼ä»¥å¤–ï¼ */
         }
         rem("AH=AL/N;AL=AL%N");
         break;
@@ -720,7 +746,7 @@ void	disline1()
         break;
  case 0xea:     mne("jmp") ;farptr();break;
  case 0xeb:     mne("jmp") ;
-        PR1(op1p,"short %04x",IP(op0)+2+dbr());
+        PR1(op1p,"short %04x",(int) IP(op0)+2+dbr());
         break;
  case 0xec:     mne("in") ;op1("al");op2("dx");break;
  case 0xed:     mne("in") ;op1("ax");op2("dx");break;
@@ -761,7 +787,7 @@ void	disline1()
         if (c == 0x66) {
             op++;
             c=(*op) & 0xff;
-            whitch = 1; // opsize32 ^= 1; ?? ©M‚È‚µ...
+            whitch = 1; // opsize32 ^= 1; ?? è‡ªä¿¡ãªã—...
         }
 
         if( (c>=0xa4) && (c<0xb0) ) {
@@ -852,39 +878,39 @@ void	disline1()
 }
 
 /**********************************************************************
- *  ‘Š‘ÎƒoƒCƒgi•ªŠòæj‚ğ•\¦
+ *  ç›¸å¯¾ãƒã‚¤ãƒˆï¼ˆåˆ†å²å…ˆï¼‰ã‚’è¡¨ç¤º
  **********************************************************************
  */
 void	relb()
 {
         if(op1buf[0]) {
-                PR2(op2p,"%04x",IP(op0)+2+dbr());
+                PR2(op2p,"%04x",(int) IP(op0)+2+dbr());
         }else{
-                PR1(op1p,"%04x",IP(op0)+2+dbr());
+                PR1(op1p,"%04x",(int) IP(op0)+2+dbr());
         }
 }
 
 void	rel_ll()
 {
         if(op1buf[0]) {
-                PR2(op2p,"%06lx",IP(op0)+5+dd());
+                PR2(op2p,"%06x",(int) (IP(op0)+5+dd()));
         }else{
-                PR1(op1p,"%06lx",IP(op0)+5+dd());
+                PR1(op1p,"%06x",(int) (IP(op0)+5+dd()));
         }
 }
 
 void	rel_dw()
 {
-	long ea;
+	int ea;
 	if(adsize32) {
-	        ea=dd();ea+=IP(op);PR1(op1p,"%08lx",ea);
+	        ea=dd();ea+=IP(op);PR1(op1p,"%08x",ea);
 	}else{
-	        ea=dw();ea+=IP(op);PR1(op1p,"%04lx",ea & 0xffffL);
+	        ea=dw();ea+=IP(op);PR1(op1p,"%04x",ea & 0xffffL);
 	}
 }
 
 /**********************************************************************
- *  ‘¦’lƒoƒCƒgi•„†‚È‚µj‚ğ•\¦
+ *  å³å€¤ãƒã‚¤ãƒˆï¼ˆç¬¦å·ãªã—ï¼‰ã‚’è¡¨ç¤º
  **********************************************************************
  */
 void	immb()
@@ -897,7 +923,7 @@ void	immb()
 }
 
 /**********************************************************************
- *  ‘¦’lƒoƒCƒgi•„†•t‚«j‚ğ•\¦
+ *  å³å€¤ãƒã‚¤ãƒˆï¼ˆç¬¦å·ä»˜ãï¼‰ã‚’è¡¨ç¤º
  **********************************************************************
  */
 void	immr()
@@ -920,7 +946,7 @@ void	immr()
 }
 
 /**********************************************************************
- *  ‚r‚d‚fF‚n‚e‚e@‚ğ•\¦
+ *  ï¼³ï¼¥ï¼§ï¼šï¼¯ï¼¦ï¼¦ã€€ã‚’è¡¨ç¤º
  **********************************************************************
  */
 void	farptr()
@@ -943,7 +969,7 @@ void	farptr()
 }
 
 /**********************************************************************
- *  m‚n‚e‚en@‚ğ•\¦
+ *  ï¼»ï¼¯ï¼¦ï¼¦ï¼½ã€€ã‚’è¡¨ç¤º
  **********************************************************************
  */
 void	ind()
@@ -957,7 +983,7 @@ void	ind()
         }
 
 	if(adsize32) {
-	        PR1(op1p,"[%08lx]",dd());
+	        PR1(op1p,"[%08x]",dd());
 	}else{
 	        PR1(op1p,"[%04x]",dw());
 	}
@@ -974,14 +1000,14 @@ void	ind2()
         }
 
 	if(adsize32) {
-	        PR2(op2p,"[%08lx]",dd());
+	        PR2(op2p,"[%08x]",dd());
 	}else{
 	        PR2(op2p,"[%04x]",dw());
 	}
 }
 
 /**********************************************************************
- *  m‚r‚d‚fF‚n‚e‚en@‚ğ•\¦
+ *  ï¼»ï¼³ï¼¥ï¼§ï¼šï¼¯ï¼¦ï¼¦ï¼½ã€€ã‚’è¡¨ç¤º
  **********************************************************************
  */
 void	farind()
@@ -991,7 +1017,7 @@ void	farind()
 	if(adsize32) {
 	        off32=dd();
 	        seg=dw();
-	        PR1(op1p,"[%04x:%08lx]",seg,off32);
+	        PR1(op1p,"[%04x:%08x]",seg,off32);
         }else{
 	        off=dw();
 	        seg=dw();
@@ -1000,7 +1026,7 @@ void	farind()
 }
 
 /**********************************************************************
- *  ‘¦’lƒ[ƒh‚ğ•\¦
+ *  å³å€¤ãƒ¯ãƒ¼ãƒ‰ã‚’è¡¨ç¤º
  **********************************************************************
  */
 void	immw()
@@ -1027,17 +1053,17 @@ void	immw()
 void	immd()
 {
         if(op1buf[0]) {
-                PR2(op2p,"%08lx",dd());
+                PR2(op2p,"%08x",dd());
         }else{
-                PR1(op1p,"%08lx",dd());
+                PR1(op1p,"%08x",dd());
         }
 }
 
 /**********************************************************************
- *  ‘¦’lƒoƒCƒg‚ ‚é‚¢‚Íƒ[ƒh‚ğ•\¦
+ *  å³å€¤ãƒã‚¤ãƒˆã‚ã‚‹ã„ã¯ãƒ¯ãƒ¼ãƒ‰ã‚’è¡¨ç¤º
  **********************************************************************
  */
-void	immbw(w)
+void	immbw(int w)
 {
         if(w&1) immdw();
         else    immb();
@@ -1061,16 +1087,16 @@ void	pop(char *s)
 
 void	undef()
 {
-        mne(UNDEF);             /* –¢’è‹`–½—ß‚Å‚ ‚é */
+        mne(UNDEF);             /* æœªå®šç¾©å‘½ä»¤ã§ã‚ã‚‹ */
 }
 
 void	undis()
 {
-        mne("???");             /* ‚±‚Ìƒpƒ^[ƒ“‚Ì‰ğÍ‚Í–¢ì¬ */
+        mne("???");             /* ã“ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã®è§£æã¯æœªä½œæˆ */
 }
 
 /**********************************************************************
- *  ƒIƒyƒ‰ƒ“ƒh‰ğÍ      reg,mem
+ *  ã‚ªãƒšãƒ©ãƒ³ãƒ‰è§£æ      reg,mem
  **********************************************************************
  */
 void	modrmov(char *s1,char *s2,int opc)
@@ -1084,13 +1110,13 @@ void	modrmov(char *s1,char *s2,int opc)
 
 //		printf("modrmov(mod_rm=%x reg=%x)\n",mod_rm,reg);
 
-        put_regname(s1,reg,w);          /*Å‰‚ÌƒIƒyƒ‰ƒ“ƒh‚ÍƒŒƒWƒXƒ^‚Å‚ ‚é */
-        modrm(s2,opc,mod_rm,NONTYPE);   /*‘æ‚QƒIƒyƒ‰ƒ“ƒh‚Ír/m */
+        put_regname(s1,reg,w);          /*æœ€åˆã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ãƒ¬ã‚¸ã‚¹ã‚¿ã§ã‚ã‚‹ */
+        modrm(s2,opc,mod_rm,NONTYPE);   /*ç¬¬ï¼’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯r/m */
         set_eop();
 }
 
 /**********************************************************************
- *  ƒIƒyƒ‰ƒ“ƒh‰ğÍ      MMX,XMM
+ *  ã‚ªãƒšãƒ©ãƒ³ãƒ‰è§£æ      MMX,XMM
  **********************************************************************
  */
 void	modrmovmmm(char *s1,char *s2,int mmm1,int mmm2)
@@ -1104,9 +1130,9 @@ void	modrmovmmm(char *s1,char *s2,int mmm1,int mmm2)
         w     =opc & 1;
 
 		mmx = mmm1;
-	        put_regname(s1,reg,w);          /*Å‰‚ÌƒIƒyƒ‰ƒ“ƒh‚ÍƒŒƒWƒXƒ^‚Å‚ ‚é */
+	        put_regname(s1,reg,w);          /*æœ€åˆã®ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯ãƒ¬ã‚¸ã‚¹ã‚¿ã§ã‚ã‚‹ */
 		mmx = mmm2;
-    	    modrm(s2,opc,mod_rm,NONTYPE);   /*‘æ‚QƒIƒyƒ‰ƒ“ƒh‚Ír/m */
+    	    modrm(s2,opc,mod_rm,NONTYPE);   /*ç¬¬ï¼’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯r/m */
     	    set_eop();
 		mmx = 0;
 }
@@ -1115,10 +1141,10 @@ void	modrmovmmm(char *s1,char *s2,int mmm1,int mmm2)
 void	put_regname(char *s,int reg,int w)
 {
         if(mmx==1) {
-                strcpy(s,mregname[reg]);	// mm0`7;
+                strcpy(s,mregname[reg]);	// mm0ã€œ7;
         } else if(mmx==2) {
                 s[0] = 'x';
-                strcpy(s+1,mregname[reg]);	// xmm0`7;
+                strcpy(s+1,mregname[reg]);	// xmm0ã€œ7;
         } else if(w&1) {
             if(opsize32)
                 strcpy(s,eregname[reg]);
@@ -1168,7 +1194,7 @@ void	modrmseg(char *s1,char *s2)
 }
 
 /**********************************************************************
- *  –½—ß‚Ìƒ|ƒXƒgƒoƒCƒgiMOD REG R/Mj‚ğ‰ğÍ‚µ‚Ä•\¦‚·‚éB
+ *  å‘½ä»¤ã®ãƒã‚¹ãƒˆãƒã‚¤ãƒˆï¼ˆMOD REG R/Mï¼‰ã‚’è§£æã—ã¦è¡¨ç¤ºã™ã‚‹ã€‚
  **********************************************************************
  */
 void	modrm(char *s,int opc,int mod_rm,int ptrtype)
@@ -1240,7 +1266,7 @@ void	modrm32(char *s,int opc,int mod_rm,int ptrtype)
         int     reg   ;
         int     rm    ;
         int     ea;
-        	long dword;
+        	int   dword;
         	char *label;
         char    *rmstr;
 
@@ -1272,7 +1298,7 @@ void	modrm32(char *s,int opc,int mod_rm,int ptrtype)
 						if(label != NULL) {
 	                		sprintf(s,"[%s]",label);
 						}else{
-	                		sprintf(s,"[%08lx]",dword );
+	                		sprintf(s,"[%08x]",dword );
 	                	}
 	                	break;
                 default:
@@ -1295,7 +1321,7 @@ void	modrm32(char *s,int opc,int mod_rm,int ptrtype)
                 if(rm==4) modrm32_sib(s,mod_rm);
                 else{
                         s = sputs(s,rmstr) -1;
-                        sprintf(s,"+%08lx]",dd());
+                        sprintf(s,"+%08x]",dd());
                 }
                 break;
          case 3:        /* reg,reg */
@@ -1313,10 +1339,10 @@ static  char scalestr[]="1248";	/* SCALE: x1 x2 x4 x8 */
  *  mod = 00   [base + index*scale ]
  *        01   [base + index*scale + offset8 ]
  *        10   [base + index*scale + offset32]
- *  —áŠO:
- *	index = 100 (ESP) ‚Ì‚Æ‚«‚Íindex*scale‚È‚µ.
- *  mod = 00‚©‚ÂA
- *      base  = 101 (EBP) ‚Ì‚Æ‚«‚ÍbaseƒŒƒWƒXƒ^‚È‚µ‚Å‘ã‚í‚è‚É32bit ‘¦’lBASE‚É.
+ *  ä¾‹å¤–:
+ *	index = 100 (ESP) ã®ã¨ãã¯index*scaleãªã—.
+ *  mod = 00ã‹ã¤ã€
+ *      base  = 101 (EBP) ã®ã¨ãã¯baseãƒ¬ã‚¸ã‚¹ã‚¿ãªã—ã§ä»£ã‚ã‚Šã«32bit å³å€¤BASEã«.
  */
 void	modrm32_sib(char *s,int mod_rm)
 {
@@ -1359,7 +1385,7 @@ void	modrm32_sib(char *s,int mod_rm)
         switch(mod) {
          case 0: /* [ no basereg , always add 32bit base address] */
 		if(nobase) {
-	                sprintf(s,"+%08lx]",dd());
+	                sprintf(s,"+%08x]",dd());
 	        }else{
                         sprintf(s,"]");
                 }
@@ -1373,9 +1399,9 @@ void	modrm32_sib(char *s,int mod_rm)
                 }
                 break;
          case 2: /* disp32[EAX] */
-                sprintf(s,"+%08lx]",dd());
+                sprintf(s,"+%08x]",dd());
                 break;
-         case 3: /* ‚±‚ê‚Í‚ ‚è‚¦‚È‚¢ */
+         case 3: /* ã“ã‚Œã¯ã‚ã‚Šãˆãªã„ */
                 break;
          default:
                 break;
@@ -1678,14 +1704,14 @@ void	inst_0x0f()
         op++;
         mne("movzx");
         strcpy(op1p,eregname[reg]);		/* ereg ! */
-        modrm(op2p,opc,mod_rm,PTRTYPE); /*‘æ‚QƒIƒyƒ‰ƒ“ƒh‚Ír/m */
+        modrm(op2p,opc,mod_rm,PTRTYPE); /*ç¬¬ï¼’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯r/m */
         break;
         
  case 0xB7: /* MOVZX   rd,rmw    */
         op++;
         mne("movzx");
         strcpy(op1p, regname[reg]);
-        modrm(op2p,opc,mod_rm,PTRTYPE); /*‘æ‚QƒIƒyƒ‰ƒ“ƒh‚Ír/m */
+        modrm(op2p,opc,mod_rm,PTRTYPE); /*ç¬¬ï¼’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯r/m */
         break;
 #else
  case 0xB6: /* MOVZX   rw,rmb    */
@@ -1694,7 +1720,7 @@ void	inst_0x0f()
         mne("movzx");
         if(opc==0xb6)   strcpy(op1p, regname[reg]);
         else            strcpy(op1p,eregname[reg]);
-        modrm(op2p,opc,mod_rm,PTRTYPE); /*‘æ‚QƒIƒyƒ‰ƒ“ƒh‚Ír/m */
+        modrm(op2p,opc,mod_rm,PTRTYPE); /*ç¬¬ï¼’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯r/m */
         break;
 #endif
 
@@ -1739,7 +1765,7 @@ void	inst_0x0f()
         mne("movsx");
         if(opc==0xbe)   strcpy(op1p, regname[reg]);
         else            strcpy(op1p,eregname[reg]);
-        modrm(op2p,opc,mod_rm,PTRTYPE); /*‘æ‚QƒIƒyƒ‰ƒ“ƒh‚Ír/m */
+        modrm(op2p,opc,mod_rm,PTRTYPE); /*ç¬¬ï¼’ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã¯r/m */
         break;
 
  case 0xC0: /* XADD    rmb,rb    */
@@ -1769,7 +1795,7 @@ void	inst_0x0f()
         break;
 /*****************************************************************/
 #if	MMX
-	/* P55C‚Å’Ç‰Á‚³‚ê‚é—\’è‚ÌMMXŠÖ˜A‚Ì–½—ß */
+	/* P55Cã§è¿½åŠ ã•ã‚Œã‚‹äºˆå®šã®MMXé–¢é€£ã®å‘½ä»¤ */
  case 0x77:
         mne("emms");
         break;
@@ -1837,7 +1863,7 @@ void	inst_0x0f()
 
 
 #if	AMD3DNOW
-	/* AMD‚Ì3DNow!(TM)–½—ßŒQ */
+	/* AMDã®3DNow!(TM)å‘½ä»¤ç¾¤ */
  case 0x0d:
 		{
 			int prefetch_type;
@@ -1862,7 +1888,7 @@ void	inst_0x0f()
         break;
  case 0x0f:
 		{
-			//op++;		//‚QŒÂ–Ú‚Ì 0fh ‚ğ“Ç‚İ”ò‚Î‚·.
+			//op++;		//ï¼’å€‹ç›®ã® 0fh ã‚’èª­ã¿é£›ã°ã™.
     	    AMD3dnow();	
     	    rem("3DNow!");
 		}
@@ -1974,7 +2000,7 @@ static	char *fpu_df_c0[]=
 
 /*****************************************************************/
 
-void	inst_FPU(opc)
+void	inst_FPU(int opc)
 {
         int mod_rm;
         int mod;

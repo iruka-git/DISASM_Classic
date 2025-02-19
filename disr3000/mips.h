@@ -108,17 +108,17 @@ struct mips_opcode
      that is used.  If pinfo is INSN_MACRO, then this is instead the
      ISA level of the macro (0 or 1 is always supported, 2 is ISA 2,
      etc.).  */
-  unsigned int match;
+  unsigned long match;
   /* If pinfo is not INSN_MACRO, then this is a bit mask for the
      relevant portions of the opcode when disassembling.  If the
      actual opcode anded with the match field equals the opcode field,
      then we have found the correct instruction.  If pinfo is
      INSN_MACRO, then this field is the macro identifier.  */
-  unsigned int mask;
+  unsigned long mask;
   /* For a macro, this is INSN_MACRO.  Otherwise, it is a collection
      of bits describing the instruction, notably any relevant hazard
      information.  */
-  unsigned int pinfo;
+  unsigned long pinfo;
 };
 
 /* These are the characters which may appears in the args field of an

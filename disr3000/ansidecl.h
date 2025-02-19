@@ -22,10 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
    Macro	ANSI C definition	Traditional C definition
    -----	---- - ----------	----------- - ----------
-   PTR		`void *'		`char *'
-   LONG_DOUBLE	`long double'		`double'
-   VOLATILE	`volatile'		`'
-   SIGNED	`signed'		`'
+   PTR		`void *'			`char *'
+   LONG_DOUBLE	`long double'	`double'
+   VOLATILE	`volatile'			`'
+   SIGNED	`signed'			`'
    PTRCONST	`void *const'		`char *'
    ANSI_PROTOTYPES  1			not defined
 

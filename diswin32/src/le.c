@@ -1,5 +1,5 @@
 /**********************************************************************
- *  ‚k‚dŒ`®‚Ìƒtƒ@ƒCƒ‹‚ğƒ_ƒ“ƒv‚·‚éB
+ *  ï¼¬ï¼¥å½¢å¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹ã€‚
  **********************************************************************
  */
 #include  <stdio.h>
@@ -9,16 +9,16 @@
 #include "pedump.h"
 
 
-/***  ƒvƒƒgƒ^ƒCƒvéŒ¾@***/
+/***  ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€ã€€***/
 void	pe_dump(void);
-void	dump_out(FILE *fp,unsigned char *buf,long cutsize,long start);
-void	code32_dump(int segnum,char *sectname,long off,long siz,long start,long size);
-void	data32_cut(int segnum,char *sectname,long off,long siz,long start,long size);
-void	data32_dump(int segnum,char *sectname,long off,long siz,long start,long size);
+void	dump_out(FILE *fp,unsigned char *buf,int cutsize,int start);
+void	code32_dump(int segnum,char *sectname,int off,int siz,int start,int size);
+void	data32_cut(int segnum,char *sectname,int off,int siz,int start,int size);
+void	data32_dump(int segnum,char *sectname,int off,int siz,int start,int size);
 void	section_dump(void);
-int		hint_dump(long rva,long size,long offset);
-int		imports_dump(long offset,long size,long vadrs);
-int		exports_dump(long offset,long size,long vadrs);
+int		hint_dump(int rva,int size,int offset);
+int		imports_dump(int offset,int size,int vadrs);
+int		exports_dump(int offset,int size,int vadrs);
 void	imp_exp_find(int f);
 
 void	set_cpumode(int op,int ad);
@@ -26,7 +26,7 @@ void	set_exemode(int mode);
 
 
 char	*xstrdup(char *s);
-char    *timedate_string(long lstamp);
+char    *timedate_string(int lstamp);
 
 
 #define Read(buf,siz)   fread (buf,1,siz,ifp)
@@ -38,49 +38,49 @@ char    *timedate_string(long lstamp);
 #define	ASMCUTS 0x8000L
 
 /**********************************************************************
- *  ‚d‚˜‚”‚…‚’‚‚‚Œ‚“
+ *  ï¼¥ï½˜ï½”ï½…ï½’ï½ï½ï½Œï½“
  **********************************************************************
  */
 extern  FILE  *ifp;
 extern  FILE  *ofp;
 extern	char  *vbuf;
-extern  char  *loadbuf;         /* ƒoƒCƒiƒŠ[‚ğƒ[ƒh‚·‚éƒoƒbƒtƒ@ */
-extern	char  *opt[128];	/* ƒIƒvƒVƒ‡ƒ“•¶š‚ªw’è‚³‚ê‚Ä‚¢‚½‚ç‚»‚Ì•¶š‚É*/
-			        /* ‘±‚­•¶š—ñ‚ğŠi”[Aw’è‚È‚¯‚ê‚ÎNULL	*/
+extern  char  *loadbuf;         /* ãƒã‚¤ãƒŠãƒªãƒ¼ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ */
+extern	char  *opt[128];	/* ã‚ªãƒ—ã‚·ãƒ§ãƒ³æ–‡å­—ãŒæŒ‡å®šã•ã‚Œã¦ã„ãŸã‚‰ãã®æ–‡å­—ã«*/
+			        /* ç¶šãæ–‡å­—åˆ—ã‚’æ ¼ç´ã€æŒ‡å®šãªã‘ã‚Œã°NULL	*/
 extern	char   srcname[];
 extern	char   binname[];
 extern	char   hexname[];
 extern	char   inpname[];
 extern	int	   quietmode;
-void NEseek(long);
-void loadbin(long off,long size);
-long disasm(char *buf,long start,long size,FILE *ofp);
-void gen_dummy_hdr(char *s,long l);
+void NEseek(int);
+void loadbin(int off,int size);
+int disasm(char *buf,int start,int size,FILE *ofp);
+void gen_dummy_hdr(char *s,int l);
 
-extern	PE_HDR   pe;    /* PEŒ`®‚Ìƒwƒbƒ_[   */
+extern	PE_HDR   pe;    /* PEå½¢å¼ã®ãƒ˜ãƒƒãƒ€ãƒ¼   */
 
 /**********************************************************************
- *  ‚v‚‚’‚‹
+ *  ï¼·ï½ï½’ï½‹
  **********************************************************************
  */
 typedef struct OBJT {
-    long   virtual_size;
-    long   rel_base;
-    long   flag;
-    long   pagemap_idx;
-    long   pagemap_ent;
-    long   rsv;
+    int   virtual_size;
+    int   rel_base;
+    int   flag;
+    int   pagemap_idx;
+    int   pagemap_ent;
+    int   rsv;
 } OBJT;
 
 
 
-void NEread(long offset,void *buf,long len)
+void NEread(int offset,void *buf,int len)
 {
 	NEseek(offset);
 	Read(buf,len);
 }
 /**********************************************************************
- *  ‚k‚d@‚c‚t‚l‚oƒƒCƒ“
+ *  ï¼¬ï¼¥ã€€ï¼¤ï¼µï¼­ï¼°ãƒ¡ã‚¤ãƒ³
  **********************************************************************
  */
 
@@ -89,19 +89,19 @@ void NEread(long offset,void *buf,long len)
 void	le_dump(void)
 {
 	OBJT	objt;
-	long	le_pagesize;
-	long	le_datapage;
-	long	le_objt;
-	long	le_objcnt;
-	long	le_pagemap;
-	long	offset;
+	int	le_pagesize;
+	int	le_datapage;
+	int	le_objt;
+	int	le_objcnt;
+	int	le_pagemap;
+	int	offset;
 	int i;
 
-	NEread(0x0028L,&le_pagesize,sizeof(long) );
-	NEread(0x0080L,&le_datapage,sizeof(long) );
-	NEread(0x0040L,&le_objt    ,sizeof(long) );
-	NEread(0x0044L,&le_objcnt  ,sizeof(long) );
-	NEread(0x0048L,&le_pagemap ,sizeof(long) );
+	NEread(0x0028L,&le_pagesize,sizeof(int) );
+	NEread(0x0080L,&le_datapage,sizeof(int) );
+	NEread(0x0040L,&le_objt    ,sizeof(int) );
+	NEread(0x0044L,&le_objcnt  ,sizeof(int) );
+	NEread(0x0048L,&le_pagemap ,sizeof(int) );
 	
 	printf("LE format\n");
 
@@ -118,13 +118,13 @@ void	le_dump(void)
       ifopt('s') {
       	pe.opt.ImageBase           =objt.rel_base;
       	
-	    set_cpumode(1,1);	/* ƒAƒhƒŒƒXAƒIƒyƒ‰ƒ“ƒhƒTƒCƒY‹¤‚É‚R‚Q‚‚‚‰‚” */
+	    set_cpumode(1,1);	/* ã‚¢ãƒ‰ãƒ¬ã‚¹ã€ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã‚µã‚¤ã‚ºå…±ã«ï¼“ï¼’ï½‚ï½‰ï½” */
 		set_exemode(1);		/* LE MODE */
-        code32_dump(i+1,"LE_CODE"       /*ƒZƒNƒVƒ‡ƒ“–¼ */
-                   ,offset				/*ƒtƒ@ƒCƒ‹‚Ìæ“ª‚©‚ç‚ÌƒIƒtƒZƒbƒg*/
-                   ,objt.virtual_size	/* ƒuƒƒbƒNƒTƒCƒY */
-                   ,objt.rel_base		/* ‰¼‘zƒAƒhƒŒƒX*/
-                   ,objt.virtual_size	/* ‰¼‘zƒTƒCƒY */
+        code32_dump(i+1,"LE_CODE"       /*ã‚»ã‚¯ã‚·ãƒ§ãƒ³å */
+                   ,offset				/*ãƒ•ã‚¡ã‚¤ãƒ«ã®å…ˆé ­ã‹ã‚‰ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ*/
+                   ,objt.virtual_size	/* ãƒ–ãƒ­ãƒƒã‚¯ã‚µã‚¤ã‚º */
+                   ,objt.rel_base		/* ä»®æƒ³ã‚¢ãƒ‰ãƒ¬ã‚¹*/
+                   ,objt.virtual_size	/* ä»®æƒ³ã‚µã‚¤ã‚º */
         );
 	  }
 		le_objt += sizeof(objt);

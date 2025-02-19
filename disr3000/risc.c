@@ -2,46 +2,67 @@
  *	R3000 DISASM
  **********************************************************************
  */
+#include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <stdarg.h>
 #include "ansidecl.h"
 #include "dis-asm.h"
+#include "symbol.h"
 
-int	lpeek(int adr);
-//int	print_insn_little_mips (int memaddr,struct disassemble_info *info);
+long	lpeek(long adr);
+//int	print_insn_little_mips (long memaddr,struct disassemble_info *info);
+int crlf_for_mips(void);
 
 static struct 	disassemble_info info;
-static int	filesize;
+static long	filesize;
 static struct  stat statbuf;
-static int	startaddr=0;
-static int	endaddr=0;
+static long	startaddr=0;
+static long	endaddr=0;
 static char *bufferp;
 static int		bigmips=0;
 
-static char	 lbuf[128];
-static char	 remarkbuf[128];
-static char	*lbufp;
 
+#define MAX_BUF_SIZ 1280
+char	 lbuf[MAX_BUF_SIZ];
+char	 remarkbuf[MAX_BUF_SIZ];
+char	*lbufp=NULL;
 
+#if 0
 typedef struct SYMBOL {
-	int	  adrs;		/* 論理アドレス  */
+	long	  adrs;		/* 論理アドレス  */
 	char     *name;		/* シンボル名	 */
 } SYMBOL;
+#endif
 
 static SYMBOL  lsymbol;
-static char    label[80];
+static char    label[800];
 
-pr_rem(char *form,char *val)
+void pr_rem(cchar *format, ...)
 {
-	vsprintf(remarkbuf,form,(void *)&val);
+	va_list arg;
+	va_start(arg,format);
+	
+	vsnprintf(remarkbuf,MAX_BUF_SIZ,format,arg);
+	va_end( arg );
 }
 
-static	prfun(FILE *stream,char *form,char *val)
+static	int prfun(FILE *stream,cchar *format, ...)
 {
-	vsprintf(lbufp,form,(void *)&val);lbufp+=strlen(lbufp);
+	if(lbufp==NULL) return 0;
+
+	va_list arg;
+	va_start(arg,format);
+	
+	vsnprintf(lbufp,255,format,arg);
+	va_end( arg );
+
+	lbufp+=strlen(lbufp);
+	return 0;
 }
 
-find_symbol_by_adrs(SYMBOL *symbol,int address)
+#if 0
+find_symbol_by_adrs(SYMBOL *symbol,long address)
 {
 	char *s = (char *)search_hash2(address,0);
 	if(s!=NULL) {
@@ -50,8 +71,9 @@ find_symbol_by_adrs(SYMBOL *symbol,int address)
 	}
 	return 0;
 }
+#endif
 
-static	unsigned int	chkbig(unsigned int data)
+static	unsigned int chkbig(unsigned long data)
 {
 	if(bigmips) {
 		return	(((data <<24L) & 0xff000000L) |
@@ -59,12 +81,12 @@ static	unsigned int	chkbig(unsigned int data)
 				 ((data >> 8L) & 0x0000ff00L) |
 				 ((data >>24L) & 0x000000ffL) );
 	}
-	return data;
+	return data & 0xFFFFFFFFL;
 }
 
-static	int memfun(unsigned int adr,unsigned char *buf,int size,struct disassemble_info *info)
+static	int memfun(unsigned long adr,unsigned char *buf,int size,struct disassemble_info *info)
 {
-	unsigned int data;
+	unsigned long data;
 	unsigned char *p;
 	int i;
 
@@ -80,9 +102,9 @@ static	int memfun(unsigned int adr,unsigned char *buf,int size,struct disassembl
 	}
 }
 
-static	int prmfun(unsigned int adr,unsigned char *buf,int size,struct disassemble_info *info)
+static	int prmfun(unsigned long adr,uchar *buf,int size,struct disassemble_info *info)
 {
-	unsigned int data;
+	unsigned long data;
 	int i,n;
 
 	data = 0;n=0;
@@ -90,9 +112,10 @@ static	int prmfun(unsigned int adr,unsigned char *buf,int size,struct disassembl
 		data |= (buf[i]<<n);n+=8;
 	}
 	if(size==4) {
-		sprintf(lbufp,"%08x %08x ",adr,chkbig(data));lbufp+=strlen(lbufp);
+//		sprintf(lbufp,"%08x %08x ",adr,chkbig(data));lbufp+=strlen(lbufp);
+		sprintf(lbufp,"%08X %08X ",(int)adr,chkbig(data));lbufp+=strlen(lbufp);
 	}else{
-		sprintf(lbufp,"%08x %04x ",adr,chkbig(data));lbufp+=strlen(lbufp);
+		sprintf(lbufp,"%08x %04x ",(int)adr,chkbig(data));lbufp+=strlen(lbufp);
 	}
 	return 0;
 }
@@ -103,7 +126,7 @@ static	void	errfun(int status, bfd_vma memaddr, struct disassemble_info *info)
 }
 
 
-static	int	pr_addr(int addr)
+static	int	pr_addr(long addr)
 {
 	if(find_symbol_by_adrs(&lsymbol,addr)) {
 		char *name=lsymbol.name;
@@ -115,7 +138,7 @@ static	int	pr_addr(int addr)
 	}
 }
 
-void set_ea(char *buf,int addr)
+void set_ea(char *buf,long addr)
 {
 	if(find_symbol_by_adrs(&lsymbol,addr)) {
 		char *name=lsymbol.name;
@@ -124,19 +147,19 @@ void set_ea(char *buf,int addr)
 					 *p++ = 0;
 		sprintf(buf,"%s",label);
 	}else{
-		sprintf(buf,"0x%08x",addr);
+		sprintf(buf,"0x%08x",(int)addr);
 	}
 }
 
 
-static	void	prafun(unsigned int addr,struct disassemble_info *info)
+static	void	prafun(unsigned long addr,struct disassemble_info *info)
 {
-	sprintf(lbufp,"$%08x",addr);lbufp+=strlen(lbufp);
+	sprintf(lbufp,"$%08x",(int)addr);lbufp+=strlen(lbufp);
 	pr_addr(addr);
 }
 
 
-dislmips_init()
+void dislmips_init()
 {
 	info.stream				= NULL;
 	info.fprintf_func       = (fprintf_ftype) prfun;
@@ -147,7 +170,7 @@ dislmips_init()
 }
 
 
-static void print_labels(FILE *ofp,int memaddr)
+static void print_labels(FILE *ofp,long memaddr)
 {
 	lbufp=lbuf;
 	remarkbuf[0]=0;
@@ -171,7 +194,7 @@ static void	print_comments(FILE *ofp)
 //-------------------------------------------------------------
 //	MIPS用.
 //-------------------------------------------------------------
-static void disl_mips(FILE *ofp,int memaddr)
+static void disl_mips(FILE *ofp,long memaddr)
 {
 	print_labels(ofp,memaddr);
 	print_insn_little_mips (memaddr,&info);
@@ -179,10 +202,10 @@ static void disl_mips(FILE *ofp,int memaddr)
 	if(crlf_for_mips()) fprintf(ofp,"\n");
 }
 
-int disasm_mips(char *buf,int start,int size,FILE *ofp)
+long disasm_mips(char *buf,long start,long size,FILE *ofp)
 {
-	int off;
-	int adr;
+	long off;
+	long adr;
 	
 	startaddr = start;
 	endaddr   = start + size;
@@ -194,12 +217,13 @@ int disasm_mips(char *buf,int start,int size,FILE *ofp)
 	return size;
 }
 
+#if 0
 //-------------------------------------------------------------
 //	SH用.
 //-------------------------------------------------------------
 #define LITTLE_BIT 2
 
-static void disl_sh(FILE *ofp,int memaddr)
+static void disl_sh(FILE *ofp,long memaddr)
 {
 	print_labels(ofp,memaddr);
     info.flags = LITTLE_BIT;
@@ -208,10 +232,10 @@ static void disl_sh(FILE *ofp,int memaddr)
 	if(crlf_for_sh()) fprintf(ofp,"\n");
 }
 
-int disasm_sh(char *buf,int start,int size,FILE *ofp)
+long disasm_sh(char *buf,long start,long size,FILE *ofp)
 {
-	int off;
-	int adr;
+	long off;
+	long adr;
 	
 	startaddr = start;
 	endaddr   = start + size;
@@ -226,7 +250,7 @@ int disasm_sh(char *buf,int start,int size,FILE *ofp)
 //-------------------------------------------------------------
 //	ARM用.
 //-------------------------------------------------------------
-static void disl_arm(FILE *ofp,int memaddr)
+static void disl_arm(FILE *ofp,long memaddr)
 {
 	print_labels(ofp,memaddr);
     info.flags = 0;		//  info.flags = LITTLE_BIT;
@@ -235,10 +259,10 @@ static void disl_arm(FILE *ofp,int memaddr)
 	if(crlf_for_arm()) fprintf(ofp,"\n");
 }
 
-int disasm_arm(char *buf,int start,int size,FILE *ofp)
+long disasm_arm(char *buf,long start,long size,FILE *ofp)
 {
-	int off;
-	int adr;
+	long off;
+	long adr;
 	
 	startaddr = start;
 	endaddr   = start + size;
@@ -249,36 +273,39 @@ int disasm_arm(char *buf,int start,int size,FILE *ofp)
 	}
 	return size;
 }
+#endif
+
+
 
 bfd_vma		bfd_getl32(const unsigned char *buffer)
 {
-	return (((unsigned int )buffer[3]<<24L) |
-			((unsigned int )buffer[2]<<16L) |
-			((unsigned int )buffer[1]<< 8L) |
-			((unsigned int )buffer[0]     ) )
+	return (((unsigned long )buffer[3]<<24L) |
+			((unsigned long )buffer[2]<<16L) |
+			((unsigned long )buffer[1]<< 8L) |
+			((unsigned long )buffer[0]     ) )
 	;
 }
 
 bfd_vma		bfd_getb32(const unsigned char *buffer)
 {
-	return (((unsigned int )buffer[0]<<24L) |
-			((unsigned int )buffer[1]<<16L) |
-			((unsigned int )buffer[2]<< 8L) |
-			((unsigned int )buffer[3]     ) )
+	return (((unsigned long )buffer[0]<<24L) |
+			((unsigned long )buffer[1]<<16L) |
+			((unsigned long )buffer[2]<< 8L) |
+			((unsigned long )buffer[3]     ) )
 	;
 }
 
 bfd_vma		bfd_getl16(const unsigned char *buffer)
 {
-	return (((unsigned int )buffer[1]<< 8L) |
-			((unsigned int )buffer[0]     ) )
+	return (((unsigned long )buffer[1]<< 8L) |
+			((unsigned long )buffer[0]     ) )
 	;
 }
 
 bfd_vma		bfd_getb16(const unsigned char *buffer)
 {
-	return (((unsigned int )buffer[0]<< 8L) |
-			((unsigned int )buffer[1]     ) )
+	return (((unsigned long )buffer[0]<< 8L) |
+			((unsigned long )buffer[1]     ) )
 	;
 }
 

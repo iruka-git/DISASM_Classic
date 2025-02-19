@@ -19,6 +19,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
+#include  <stdio.h>
+#include  <stdlib.h>
+#include  <string.h>
+#include  <malloc.h>
+
 #include "ansidecl.h"	// added.
 
 #include "dis-asm.h"
@@ -47,11 +52,11 @@ static char *arm_shift[] =
 {"lsl", "lsr", "asr", "ror"};
 
 static int print_insn_arm PARAMS ((bfd_vma, struct disassemble_info *,
-				   long));
+				   int));
 
 static void
 arm_decode_shift (given, func, stream)
-     long given;
+     int given;
      fprintf_ftype func;
      void *stream;
 {
@@ -86,7 +91,7 @@ static int
 print_insn_arm (pc, info, given)
      bfd_vma         pc;
      struct disassemble_info *info;
-     long given;
+     int given;
 {
   struct arm_opcode *insn;
   void *stream = info->stream;
@@ -99,7 +104,7 @@ print_insn_arm (pc, info, given)
 	  char *c;
 
 #if	1	// crlf_flg
-	  if((insn->value==0x08100000) && (given & (1 << 15)) ) crlf_flg=1;	// ldmdb {pc‚ðŠÜ‚Þ}
+	  if((insn->value==0x08100000) && (given & (1 << 15)) ) crlf_flg=1;	// ldmdb {pcã‚’å«ã‚€}
 	  if((insn->value==0x012FFF10) ) crlf_flg=1;						// bx
 #endif
 
@@ -424,7 +429,7 @@ print_insn_arm (pc, info, given)
 			      {
 			      case 'r':
 				{
-				  long reg;
+				  int reg;
 				  reg = given >> bitstart;
 				  reg &= (2 << (bitend - bitstart)) - 1;
 				  func (stream, "%s", arm_regnames[reg]);
@@ -432,7 +437,7 @@ print_insn_arm (pc, info, given)
 				break;
 			      case 'd':
 				{
-				  long reg;
+				  int reg;
 				  reg = given >> bitstart;
 				  reg &= (2 << (bitend - bitstart)) - 1;
 				  func (stream, "%d", reg);
@@ -440,7 +445,7 @@ print_insn_arm (pc, info, given)
 				break;
 			      case 'x':
 				{
-				  long reg;
+				  int reg;
 				  reg = given >> bitstart;
 				  reg &= (2 << (bitend - bitstart)) - 1;
 				  func (stream, "0x%08x", reg);
@@ -448,7 +453,7 @@ print_insn_arm (pc, info, given)
 				break;
 			      case 'f':
 				{
-				  long reg;
+				  int reg;
 				  reg = given >> bitstart;
 				  reg &= (2 << (bitend - bitstart)) - 1;
 				  if (reg > 7)
@@ -505,7 +510,7 @@ static int
 print_insn_thumb (pc, info, given)
      bfd_vma         pc;
      struct disassemble_info *info;
-     long given;
+     int given;
 {
   struct thumb_opcode *insn;
   void *stream = info->stream;
@@ -518,7 +523,7 @@ print_insn_thumb (pc, info, given)
           char *c = insn->assembler;
 
 #if	1	// crlf_flg
-		  if((insn->value==0xBC00) && (given & (1 << 8)) ) crlf_flg=1;	// pop {pc‚ðŠÜ‚Þ}
+		  if((insn->value==0xBC00) && (given & (1 << 8)) ) crlf_flg=1;	// pop {pcã‚’å«ã‚€}
 		  if((insn->value==0x4700)) crlf_flg=1;							// bx
 #endif
 
@@ -555,7 +560,7 @@ print_insn_thumb (pc, info, given)
 
                         case 'S':
                           {
-                            long reg;
+                            int reg;
                             reg = (given >> 3) & 0x7;
                             if (given & (1 << 6))
                               reg += 8;
@@ -565,7 +570,7 @@ print_insn_thumb (pc, info, given)
 
                         case 'D':
                           {
-                            long reg;
+                            int reg;
                             reg = given & 0x7;
                             if (given & (1 << 7))
                              reg += 8;
@@ -634,7 +639,7 @@ print_insn_thumb (pc, info, given)
                               {
                               case '-':
                                 {
-                                  long reg;
+                                  int reg;
                                   c++;
                                   while (*c >= '0' && *c <= '9')
                                     bitend = (bitend * 10) + *c++ - '0';
@@ -733,7 +738,7 @@ print_insn_big_arm (pc, info)
      struct disassemble_info *info;
 {
   unsigned char      b[4];
-  long               given;
+  int               given;
   int                status;
 //  coff_symbol_type   *cs;
 //  int                is_thumb;
@@ -812,7 +817,7 @@ print_insn_little_arm (pc, info)
      struct disassemble_info * info;
 {
   unsigned char      b[4];
-  long               given;
+  int               given;
   int                status;
 //  coff_symbol_type   *cs;
 //  int                is_thumb;
@@ -840,8 +845,8 @@ print_insn_little_arm (pc, info)
 
   status = (*info->read_memory_func) (pc, (bfd_byte *) &b[0], 4, info);
 
-      	   (*info->print_memory_func)(pc, (bfd_byte *) &b[0], 4, info);	//ƒAƒhƒŒƒX‚ÆAƒƒ‚ƒŠ[“à—e‚ðƒvƒŠƒ“ƒg.
-  		   (*info->fprintf_func) (info->stream,"\t");					//ƒ^ƒuƒXƒgƒbƒv‚PŒÂƒvƒŠƒ“ƒg.
+      	   (*info->print_memory_func)(pc, (bfd_byte *) &b[0], 4, info);	//ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã€ãƒ¡ãƒ¢ãƒªãƒ¼å†…å®¹ã‚’ãƒ—ãƒªãƒ³ãƒˆ.
+  		   (*info->fprintf_func) (info->stream,"\t");					//ã‚¿ãƒ–ã‚¹ãƒˆãƒƒãƒ—ï¼‘å€‹ãƒ—ãƒªãƒ³ãƒˆ.
 
   if (status != 0 && is_thumb)
     {

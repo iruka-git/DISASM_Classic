@@ -1,5 +1,5 @@
 /**********************************************************************
- *  ‚c‚h‚rƒ‚ƒWƒ…[ƒ‹‚©‚çŒÄ‚Ño‚³‚ê‚éƒRƒ‹[ƒ`ƒ“
+ *  ï¼¤ï¼©ï¼³ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã‚‹ã‚³ãƒ«ãƒ¼ãƒãƒ³
  **********************************************************************
  */
 #include <stdio.h>
@@ -9,15 +9,15 @@
 
 
 #if	CHK_EXTERNSYM
-extern  int     segnum;                 /* ƒZƒOƒƒ“ƒg”Ô†       */
+extern  int     segnum;                 /* ã‚»ã‚°ãƒ¡ãƒ³ãƒˆç•ªå·       */
 extern  int     filtermode;             /*                      */
-extern  char   *modname[];              /* ŽQÆ–¼(string table) */
-extern  char   *myself;                 /* Ž©•ª‚ðŽ¦‚·–¼‘O       */
-extern  char   *strtable;               /* ŽQÆ–¼ƒe[ƒuƒ‹       */
+extern  char   *modname[];              /* å‚ç…§å(string table) */
+extern  char   *myself;                 /* è‡ªåˆ†ã‚’ç¤ºã™åå‰       */
+extern  char   *strtable;               /* å‚ç…§åãƒ†ãƒ¼ãƒ–ãƒ«       */
 extern	int     adsize32def;
 
-char *search_hash( long val,int flg);
-char *search_hash2(long val,int flg);
+char *search_hash( int val,int flg);
+char *search_hash2(int val,int flg);
 int		search_api(char *s,int ordinal,char *namebuf);
 void	sprintstr(char *t,char *s);
 
@@ -35,10 +35,10 @@ char *osfixuptbl[]={
 char   *sputs(char *p,char *s);
 
 /**********************************************************************
- *  ƒ‰ƒxƒ‹‚ª‚ ‚Á‚½‚ç•\Ž¦‚·‚éiƒtƒ@ƒCƒ‹‚É’¼Úo—Í‚·‚éFj
+ *  ãƒ©ãƒ™ãƒ«ãŒã‚ã£ãŸã‚‰è¡¨ç¤ºã™ã‚‹ï¼ˆãƒ•ã‚¡ã‚¤ãƒ«ã«ç›´æŽ¥å‡ºåŠ›ã™ã‚‹ï¼šï¼‰
  **********************************************************************
  */
-int	win_printlabel(long off,FILE *ofp)
+int	win_printlabel(int off,FILE *ofp)
 {
     NRT *p;
     char *s;
@@ -63,11 +63,10 @@ int	win_printlabel(long off,FILE *ofp)
 }
 
 /**********************************************************************
- *  ƒIƒyƒ‰ƒ“ƒh‚ªŠO•”ƒVƒ“ƒ{ƒ‹‚Å‚ ‚ê‚ÎA‚»‚Ì–¼‘O‚ð•Ô‚·B
+ *  ã‚ªãƒšãƒ©ãƒ³ãƒ‰ãŒå¤–éƒ¨ã‚·ãƒ³ãƒœãƒ«ã§ã‚ã‚Œã°ã€ãã®åå‰ã‚’è¿”ã™ã€‚
  **********************************************************************
  */
-int	win_printrel(off,buf)
-char *buf;
+int	win_printrel(int off,char *buf)
 {
         REL *r;
 	char *bufp;
@@ -83,7 +82,7 @@ char *buf;
         r=(REL *)search_hash(off,256);
 
         if(r!=NULL) {
-/*            if(r->type != 3) return 0;   ** FAR_ADDR type‚ÉŒÀ‚é */
+/*            if(r->type != 3) return 0;   ** FAR_ADDR typeã«é™ã‚‹ */
 	    switch(r->type) {
 	     case T_LOBYTE  :
 		bufp = sputs(bufp,"low ");
@@ -106,12 +105,12 @@ char *buf;
                  case F_INTERNALREF   :
 			if(r->type == T_SEGMENT) {
                 	    sprintf(buf ,"seg_%02d"
-                                ,r->i.i.segnum  /* “à•”ƒZƒOƒƒ“ƒg”Ô† */
+                                ,r->i.i.segnum  /* å†…éƒ¨ã‚»ã‚°ãƒ¡ãƒ³ãƒˆç•ªå· */
                 	    );
 			}else{
                 	    sprintf(bufp,"seg_%02d:%04x"
-                                ,r->i.i.segnum  /* “à•”ƒZƒOƒƒ“ƒg”Ô† */
-                                ,r->i.i.off             /* “à•”ƒZƒOƒƒ“ƒgƒIƒtƒZƒbƒg */
+                                ,r->i.i.segnum  /* å†…éƒ¨ã‚»ã‚°ãƒ¡ãƒ³ãƒˆç•ªå· */
+                                ,r->i.i.off             /* å†…éƒ¨ã‚»ã‚°ãƒ¡ãƒ³ãƒˆã‚ªãƒ•ã‚»ãƒƒãƒˆ */
 	                    );
         	        }
                         break;
@@ -129,14 +128,14 @@ char *buf;
 
             if(entryname[0]) {
                 sprintf(bufp,"%s.%d (%s)"
-                ,modulename     /* ŽQÆƒ‚ƒWƒ…[ƒ‹–¼ */
-                ,r->i.o.ordinal /* ƒGƒ“ƒgƒŠ[‚Ì˜” */
+                ,modulename     /* å‚ç…§ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å */
+                ,r->i.o.ordinal /* ã‚¨ãƒ³ãƒˆãƒªãƒ¼ã®åºæ•° */
                 ,entryname
                 );
             }else{
                 sprintf(bufp,"%s.%d"
-                ,modulename     /* ŽQÆƒ‚ƒWƒ…[ƒ‹–¼ */
-                ,r->i.o.ordinal /* ƒGƒ“ƒgƒŠ[‚Ì˜” */
+                ,modulename     /* å‚ç…§ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å */
+                ,r->i.o.ordinal /* ã‚¨ãƒ³ãƒˆãƒªãƒ¼ã®åºæ•° */
                 );
             }
                         break;
@@ -151,7 +150,7 @@ char *buf;
             }
                         sprintstr(entryname,&strtable[r->i.n.off]);
                 sprintf(bufp,"%s.%s"
-                                ,modulename     /* ŽQÆƒ‚ƒWƒ…[ƒ‹–¼ */
+                                ,modulename     /* å‚ç…§ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å */
                                 ,entryname
                         );
                 break;
@@ -167,7 +166,7 @@ char *buf;
 #else	/* CHK_EXTERNSYM */
 
 /**********************************************************************
- *  EXTERNAL SYMBOLî•ñ‚ðŽ‚½‚È‚¢ê‡
+ *  EXTERNAL SYMBOLæƒ…å ±ã‚’æŒãŸãªã„å ´åˆ
  **********************************************************************
  */
 

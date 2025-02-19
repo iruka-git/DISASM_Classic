@@ -18,7 +18,7 @@
 
 
 struct arm_opcode {
-    unsigned long value, mask;	/* recognise instruction if (op&mask)==value */
+    unsigned int value, mask;	/* recognise instruction if (op&mask)==value */
     char *assembler;		/* how to disassemble this instruction */
 };
 

@@ -23,7 +23,7 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  *
 #include "ansidecl.h"
 #include "mips.h"
 
-/* Short hand so the lines aren't too int.  */
+/* Short hand so the lines aren't too long.  */
 
 #define LDD     INSN_LOAD_MEMORY_DELAY
 #define LCD     INSN_LOAD_COPROC_DELAY

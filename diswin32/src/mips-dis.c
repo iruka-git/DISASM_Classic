@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
+#include <string.h>
+
 #include "ansidecl.h"
 /*#include "sysdep.h"*/
 
@@ -81,7 +83,7 @@ char	hexpri[16]="-$%lx";
 #define	HEXPRI4	(&hexpri[1])
 #define	MHXPRI4	(&hexpri[0])
 
-extern	set_ea(char *buf,long addr);
+extern	set_ea(char *buf,int addr);
 
 
 
@@ -96,16 +98,16 @@ set_alternate_hexa()
 
 
 //
-//	ƒIƒyƒ‰ƒ“ƒh‚Ì‰ğÍ•\¦
+//	ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®è§£æè¡¨ç¤º
 //
 /* subroutine */
 static void	print_insn_arg (d, l, pc, info)
      const char *d;
-     register unsigned long int l;
+     unsigned int l;
      bfd_vma pc;
      struct disassemble_info *info;
 {
-  long int delta;
+  int delta;
 
   switch (*d)
     {
@@ -153,13 +155,13 @@ static void	print_insn_arg (d, l, pc, info)
 
     case 'h':
       (*info->fprintf_func) (info->stream, HEXPRIS,
-			     (unsigned long) ((l >> OP_SH_PREFX)
+			     (unsigned int) ((l >> OP_SH_PREFX)
 					     & OP_MASK_PREFX));
       break;
 
     case 'k':
       (*info->fprintf_func) (info->stream, HEXPRIS,
-			     (unsigned long) ((l >> OP_SH_CACHE)
+			     (unsigned int) ((l >> OP_SH_CACHE)
 					     & OP_MASK_CACHE));
       break;
 
@@ -264,10 +266,10 @@ static void	print_insn_arg (d, l, pc, info)
    this is little-endian code.  */
 
 
-static	long	dslot=0;
-static	long	dline=0;
-static	long	prevword=0;
-static	long	currword=0;
+static	int	dslot=0;
+static	int	dline=0;
+static	int	prevword=0;
+static	int	currword=0;
 static	int		currcode;
 static	int		srcreg;
 static	int		dstreg;
@@ -279,7 +281,7 @@ int crlf_for_mips(void)
 }
 
 //
-//	ƒj[ƒ‚ƒjƒbƒN‚ª jal ‚Ån‚Ü‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©’²‚×‚é.
+//	ãƒ‹ãƒ¼ãƒ¢ãƒ‹ãƒƒã‚¯ãŒ jal ã§å§‹ã¾ã£ã¦ã„ã‚‹ã‹ã©ã†ã‹èª¿ã¹ã‚‹.
 //
 int is_jal(const char *s)
 {
@@ -287,12 +289,12 @@ int is_jal(const char *s)
 }
 
 //
-//	lui–½—ß‚Ì’¼Œã‚Ì ƒ[ƒh–½—ß‚ÉƒRƒƒ“ƒg‚ğU‚éˆ—.
+//	luiå‘½ä»¤ã®ç›´å¾Œã® ãƒ­ãƒ¼ãƒ‰å‘½ä»¤ã«ã‚³ãƒ¡ãƒ³ãƒˆã‚’æŒ¯ã‚‹å‡¦ç†.
 //
 set_remark(const struct mips_opcode *op)
 {
 	short	offset;
-	long    eaddr;
+	int    eaddr;
 	char    ea[80];
 
 	srcreg = (currword >>21L) & 31;
@@ -300,14 +302,14 @@ set_remark(const struct mips_opcode *op)
 	setreg = (prevword >>16L) & 31;
 	currcode=(currword >>24L) & 0xfc;
 
-	if( ( prevword & 0xffe00000L )==0x3c000000 ) {		// lui‚È‚ç‚ÎA
-		if(setreg == srcreg) {	//’¼‘O‚ÉƒZƒbƒg‚µ‚½ƒŒƒWƒXƒ^‚ğQÆ‚µ‚Ä‚¢‚éA
+	if( ( prevword & 0xffe00000L )==0x3c000000 ) {		// luiãªã‚‰ã°ã€
+		if(setreg == srcreg) {	//ç›´å‰ã«ã‚»ãƒƒãƒˆã—ãŸãƒ¬ã‚¸ã‚¹ã‚¿ã‚’å‚ç…§ã—ã¦ã„ã‚‹ã€
 			switch(currcode) {
-			 case 0x34:	// ori‚È‚ç‚ÎA
+			 case 0x34:	// oriãªã‚‰ã°ã€
 				eaddr = (prevword<<16L) | (currword & 0xffff);set_ea(ea,eaddr);
 				pr_rem("; %s = %s",reg_names[dstreg], ea );
 				break;
-			 case 0x24:	// addiu‚È‚ç‚ÎA
+			 case 0x24:	// addiuãªã‚‰ã°ã€
 				offset = currword;
 				eaddr  = (prevword<<16L) + offset;set_ea(ea,eaddr);
 				pr_rem("; %s = %s",reg_names[dstreg], ea );
@@ -335,21 +337,21 @@ set_remark(const struct mips_opcode *op)
 	}
 }
 //
-//	ƒj[ƒ‚ƒjƒbƒN‚Ì•\¦
+//	ãƒ‹ãƒ¼ãƒ¢ãƒ‹ãƒƒã‚¯ã®è¡¨ç¤º
 //
 static int	_print_insn_mips (memaddr, word, info)
      bfd_vma memaddr;
      struct disassemble_info *info;
-     unsigned long word;
+     unsigned int word;
 {
-  register const struct mips_opcode *op;
+  const struct mips_opcode *op;
   static boolean init = 0;
   static const struct mips_opcode *mips_hash[OP_MASK_OP + 1];
 
   /* Build a hash table to shorten the search time.  */
   if (! init)
     {
-      unsigned long i;
+      unsigned int i;
 
       for (i = 0; i <= OP_MASK_OP; i++)
 	{
@@ -387,7 +389,7 @@ static int	_print_insn_mips (memaddr, word, info)
 			if(dslot) {dmark=" -s- ";}
 			else      {dmark="     ";}
 
-			dline = (dslot & INSN_UNCOND_BRANCH_DELAY);			//‰üs‚ğ‘}“ü‚·‚é‚©‚Ç‚¤‚©?
+			dline = (dslot & INSN_UNCOND_BRANCH_DELAY);			//æ”¹è¡Œã‚’æŒ¿å…¥ã™ã‚‹ã‹ã©ã†ã‹?
 			
 			{
 				dslot = (op->pinfo & (INSN_UNCOND_BRANCH_DELAY|INSN_COND_BRANCH_DELAY) ) ;
@@ -396,9 +398,9 @@ static int	_print_insn_mips (memaddr, word, info)
 				prevword = word;
 			}
 
-	      (*info->fprintf_func) (info->stream, "%s", dmark);	//ƒfƒBƒŒƒCƒXƒƒbƒg	-s-
+	      (*info->fprintf_func) (info->stream, "%s", dmark);	//ãƒ‡ã‚£ãƒ¬ã‚¤ã‚¹ãƒ­ãƒƒãƒˆ	-s-
 	      
-	      (*info->fprintf_func) (info->stream, "%s", op->name);	//ƒjƒ‚ƒjƒbƒN‚ğo—Í‚·‚é.
+	      (*info->fprintf_func) (info->stream, "%s", op->name);	//ãƒ‹ãƒ¢ãƒ‹ãƒƒã‚¯ã‚’å‡ºåŠ›ã™ã‚‹.
 
 	      d = op->args;
 	      if (d != NULL)
@@ -406,7 +408,7 @@ static int	_print_insn_mips (memaddr, word, info)
 			if( *d != 0 )
 			{int i;
 				for(i=strlen(op->name);i<8;i++)
-		  			(*info->fprintf_func) (info->stream, " ");	//ƒjƒ‚ƒjƒbƒN‚ÌŒã‚ë‚É‹ó”’‚ğ“ü‚ê‚é.
+		  			(*info->fprintf_func) (info->stream, " ");	//ãƒ‹ãƒ¢ãƒ‹ãƒƒã‚¯ã®å¾Œã‚ã«ç©ºç™½ã‚’å…¥ã‚Œã‚‹.
 			}
 
 		  for (; *d != '\0'; d++)
@@ -432,7 +434,7 @@ int	print_insn_big_mips (memaddr, info)
   bfd_byte buffer[4];
   int status = (*info->read_memory_func) (memaddr, buffer, 4, info);
   if (status == 0)
-    return _print_insn_mips (memaddr, (unsigned long) bfd_getb32 (buffer), info);
+    return _print_insn_mips (memaddr, (unsigned int) bfd_getb32 (buffer), info);
   else
     {
       (*info->memory_error_func) (status, memaddr, info);
@@ -448,7 +450,7 @@ int	print_insn_little_mips (memaddr, info)
   int status = 	(*info->read_memory_func) (memaddr, buffer, 4, info);
   				(*info->print_memory_func) (memaddr, buffer, 4, info);
   if (status == 0)
-    return _print_insn_mips (memaddr, (unsigned long) bfd_getl32 (buffer), info);
+    return _print_insn_mips (memaddr, (unsigned int) bfd_getl32 (buffer), info);
   else
     {
       (*info->memory_error_func) (status, memaddr, info);
